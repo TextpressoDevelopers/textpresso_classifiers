@@ -1,0 +1,4 @@
+*.log
+tpclassifydocs.egg-info
+*.pyc
+.idea/*
