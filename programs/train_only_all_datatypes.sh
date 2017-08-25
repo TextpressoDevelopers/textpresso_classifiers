@@ -9,3 +9,4 @@ do
         ./boost_classifier.py -t ${source_dir}/${datatype} -c ${source_dir}/${datatype}/model.pkl -f "cas_pdf" &
     fi
 done
+wait
