@@ -51,8 +51,9 @@ def main():
             classifier.dataset.data = []
             classifier.training_set.data = []
             classifier.test_set.data = []
-            pickle.dump(classifier, open(args.config_file, "wb"))
             print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
+
+        pickle.dump(classifier, open(args.config_file, "wb"))
 
     if args.prediction_dir is not None:
         classifier = pickle.load(open(args.config_file, "rb"))
