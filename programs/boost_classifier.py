@@ -21,6 +21,9 @@ def main():
                         help="train the classifier with the data in the provided directory (there must be two subdirs, "
                              "one named 'positive' containing positive observations and one named 'negative' for "
                              "negative ones")
+    parser.add_argument("-T", "--test", dest="test", action="store_true", default=False,
+                        help="test the classifier on a test set, which is built as 80 percent of observations randomly "
+                             "selected (and removed) from the training set")
     parser.add_argument("-p", "--predict", metavar="prediction_dir", dest="prediction_dir", type=str, default=None,
                         help="classify papers in the specified directory")
     parser.add_argument("-c", "--config", metavar="config_file", dest="config_file", type=str, default=".config",
@@ -36,17 +39,20 @@ def main():
                                                   file_type=args.file_type, category=1)
         classifier.add_classified_docs_to_dataset(dir_path=os.path.join(args.training_dir, "negative"), recursive=True,
                                                   file_type=args.file_type, category=0)
-        classifier.generate_training_and_test_sets(percentage_training=0.8)
+        if args.test:
+            classifier.generate_training_and_test_sets(percentage_training=0.8)
+        else:
+            classifier.generate_training_and_test_sets(percentage_training=1)
         classifier.extract_features(use_hashing=False, ngram_range=(1, 2), lemmatization=False, stop_words="english",
                                     top_n_feat=50000)
         classifier.train_classifier(model=GradientBoostingClassifier(), dense=True)
-        test_res = classifier.test_classifier(dense=True)
-
-        classifier.dataset.data = []
-        classifier.training_set.data = []
-        classifier.test_set.data = []
-        pickle.dump(classifier, open(args.config_file, "wb"))
-        print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
+        if args.test:
+            test_res = classifier.test_classifier(dense=True)
+            classifier.dataset.data = []
+            classifier.training_set.data = []
+            classifier.test_set.data = []
+            pickle.dump(classifier, open(args.config_file, "wb"))
+            print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
 
     if args.prediction_dir is not None:
         classifier = pickle.load(open(args.config_file, "rb"))

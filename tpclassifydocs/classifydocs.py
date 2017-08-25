@@ -117,11 +117,12 @@ class TextpressoDocumentClassifier:
                                                     tokenizer=LemmaTokenizer())
             else:
                 self.vectorizer = HashingVectorizer(stop_words=stop_words, ngram_range=ngram_range)
-            train_counts = self.vectorizer.transform(self.training_set.data)
-            test_counts = self.vectorizer.transform(self.test_set.data)
             tfidf_transformer = TfidfTransformer()
+            train_counts = self.vectorizer.transform(self.training_set.data)
             self.training_set.tr_features = tfidf_transformer.fit_transform(train_counts)
-            self.test_set.tr_features = tfidf_transformer.transform(test_counts)
+            if len(self.test_set.data) > 0:
+                test_counts = self.vectorizer.transform(self.test_set.data)
+                self.test_set.tr_features = tfidf_transformer.transform(test_counts)
         else:
             if lemmatization:
                 self.vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=ngram_range,
@@ -130,12 +131,14 @@ class TextpressoDocumentClassifier:
                 self.vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=ngram_range, max_df=max_df,
                                                   max_features=max_features)
             self.training_set.tr_features = self.vectorizer.fit_transform(self.training_set.data)
-            self.test_set.tr_features = self.vectorizer.transform(self.test_set.data)
+            if len(self.test_set.data) > 0:
+                self.test_set.tr_features = self.vectorizer.transform(self.test_set.data)
         if top_n_feat is not None:
             fs = feature_selection.chi2(self.training_set.tr_features, self.training_set.target)
             best_features_idx = sorted(range(len(fs[0])), key=lambda k: fs[0][k], reverse=True)
             self.training_set.tr_features = self.training_set.tr_features[:, best_features_idx[:top_n_feat]]
-            self.test_set.tr_features = self.test_set.tr_features[:, best_features_idx[:top_n_feat]]
+            if len(self.test_set.data) > 0:
+                self.test_set.tr_features = self.test_set.tr_features[:, best_features_idx[:top_n_feat]]
 
     def train_classifier(self, model, dense: bool = False):
         """train a classifier using the sample documents in the training set and save the trained model
