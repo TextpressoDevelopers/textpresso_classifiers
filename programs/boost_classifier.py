@@ -58,7 +58,7 @@ def main():
     if args.prediction_dir is not None:
         classifier = pickle.load(open(args.config_file, "rb"))
         results = classifier.predict_files(dir_path=args.prediction_dir, file_type=args.file_type)
-        for i in range(results):
+        for i in range(len(results[0])):
             print(results[0][i], results[1][i], sep=" ")
 
 
