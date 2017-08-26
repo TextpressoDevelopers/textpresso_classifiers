@@ -37,6 +37,8 @@ class TextpressoDocumentClassifier:
         self.test_set = DatasetStruct(data=[], filenames=[], target=[], tr_features=None)
         self.classifier = None
         self.vectorizer = None
+        self.feature_selector = None
+        self.top_n_feat = 0
 
     def add_classified_docs_to_dataset(self, dir_path: str = None, recursive: bool = True,
                                        file_type: str = "pdf", category: int = 1):
@@ -139,6 +141,8 @@ class TextpressoDocumentClassifier:
             self.training_set.tr_features = self.training_set.tr_features[:, best_features_idx[:top_n_feat]]
             if len(self.test_set.data) > 0:
                 self.test_set.tr_features = self.test_set.tr_features[:, best_features_idx[:top_n_feat]]
+            self.feature_selector = fs
+            self.top_n_feat = top_n_feat
 
     def train_classifier(self, model, dense: bool = False):
         """train a classifier using the sample documents in the training set and save the trained model
@@ -195,7 +199,12 @@ class TextpressoDocumentClassifier:
                 cas_type = CasType.XML
             fulltext = extract_text_from_cas_content(read_compressed_cas_content(file_path=file_path),
                                                      cas_type=cas_type)
-        return self.classifier.predict(self.vectorizer.transform([fulltext]))
+        tr_features = self.vectorizer.transform([fulltext])
+        if self.feature_selector is not None:
+            best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
+                                       reverse=True)
+            tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
+        return self.classifier.predict(self.vectorizer.transform(tr_features))
 
     def predict_files(self, dir_path: str, file_type: str = "pdf"):
         """predict the class of a set of files in a directory
@@ -221,4 +230,9 @@ class TextpressoDocumentClassifier:
                     cas_type = CasType.XML
                 data.append(extract_text_from_cas_content(read_compressed_cas_content(file_path=file_path),
                             cas_type=cas_type))
-        return filenames, self.classifier.predict(self.vectorizer.transform(data))
+        tr_features = self.vectorizer.transform(data)
+        if self.feature_selector is not None:
+            best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
+                                       reverse=True)
+            tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
+        return filenames, self.classifier.predict(tr_features)

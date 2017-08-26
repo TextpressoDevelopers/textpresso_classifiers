@@ -48,11 +48,11 @@ def main():
         classifier.train_classifier(model=GradientBoostingClassifier(), dense=True)
         if args.test:
             test_res = classifier.test_classifier(dense=True)
-            classifier.dataset.data = []
-            classifier.training_set.data = []
-            classifier.test_set.data = []
             print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
 
+        classifier.dataset.data = []
+        classifier.training_set.data = []
+        classifier.test_set.data = []
         pickle.dump(classifier, open(args.config_file, "wb"))
 
     if args.prediction_dir is not None:
