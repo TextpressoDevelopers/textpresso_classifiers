@@ -50,10 +50,10 @@ for datatype in $(ls ${model_dir})
 do
     if [ -d ${model_dir}/${datatype} ]
     then
-        ./boost_classifier.py -p ${data_dir}/${datatype}/vpos_tp -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_vpos_tp.csv &
-        ./boost_classifier.py -p ${data_dir}/${datatype}/vpos_fp -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_vpos_fp.csv &
-        ./boost_classifier.py -p ${data_dir}/${datatype}/vneg_tn -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_vneg_tn.csv &
-        ./boost_classifier.py -p ${data_dir}/${datatype}/vneg_fn -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_vneg_fn.csv &
+        ./boost_classifier.py -p ${data_dir}/${datatype}/valp_tp -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_valp_tp.csv &
+        ./boost_classifier.py -p ${data_dir}/${datatype}/valp_fp -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_valp_fp.csv &
+        ./boost_classifier.py -p ${data_dir}/${datatype}/valn_tn -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_valn_tn.csv &
+        ./boost_classifier.py -p ${data_dir}/${datatype}/valn_fn -c ${model_dir}/${datatype}/model.pkl -f "cas_pdf" > ${data_dir}/${datatype}/prediction_valn_fn.csv &
     fi
 done
 wait
