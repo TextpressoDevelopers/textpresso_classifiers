@@ -48,7 +48,7 @@ do
     valn_tn_p=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_tn.csv | wc -l)
     valn_tn_n=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_tn.csv | wc -l)
     valn_fn_p=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_fn.csv | wc -l)
-    valn_fn_n=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_fn.csv | wc -l)
+    valn_fn_n=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_fn.csv | wc -l)
 
     if [[ ${tot_vn} != "0" ]]
     then
