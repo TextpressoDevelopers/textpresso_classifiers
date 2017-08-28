@@ -41,16 +41,27 @@ do
     then
         tot_vn=${tmp}
     fi
-    tp=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_tp.csv | wc -l)
-    fp=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_fp.csv | wc -l)
-    tn=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_tn.csv | wc -l)
-    fn=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_fn.csv | wc -l)
+    valp_tp_p=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_tp.csv | wc -l)
+    valp_tp_n=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_tp.csv | wc -l)
+    valp_fp_p=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_fp.csv | wc -l)
+    valp_fp_n=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_fp.csv | wc -l)
+    valn_tn_p=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_tn.csv | wc -l)
+    valn_tn_n=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_tn.csv | wc -l)
+    valn_fn_p=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_fn.csv | wc -l)
+    valn_fn_n=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_fn.csv | wc -l)
 
     if [[ ${tot_vn} != "0" ]]
     then
         pn_rate=$(echo "("${tot_n}"*"${tot_vp}")/("${tot_vn}"*"${tot_p}")" | bc -l)
-        tn=$(echo ${tn}"*"${pn_rate} | bc -l)
-        fn=$(echo ${fn}"*"${pn_rate} | bc -l)
+        valn_tn_p=$(echo ${valn_tn_p}"*"${pn_rate} | bc -l)
+        valn_tn_n=$(echo ${valn_tn_n}"*"${pn_rate} | bc -l)
+        valn_fn_p=$(echo ${valn_fn_p}"*"${pn_rate} | bc -l)
+        valn_fn_n=$(echo ${valn_fn_n}"*"${pn_rate} | bc -l)
+
+        tp=$((valp_tp_p + valn_fn_p))
+        fp=$((valp_fp_p + valn_tn_p))
+        tn=$((valn_tn_n + valp_fp_n))
+        fn=$((valn_fn_n + valp_tp_n))
 
         precision=0
         if [[ $(echo ${tp}"+"${fp}">0" | bc -l) != "0" ]]; then precision=$(echo ${tp}"/("${tp}"+"${fp}")" | bc -l); fi
