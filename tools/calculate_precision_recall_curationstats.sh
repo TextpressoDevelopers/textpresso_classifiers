@@ -10,7 +10,7 @@ dtindices=(1 3 5 7 8 9 14 16 17 19 20 22)
 tmpfile=$(mktemp)
 wget -o /dev/null --post-data="select_curator=two736&action=Curation+Statistics+Page&checkbox_all_datatypes=all&checkbox_all_flagging_methods=all" "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi" -O ${tmpfile}
 
-echo -e "datatype\tprecision\trecall"
+echo -e "datatype\tprecision\trecall\tpn_rate"
 
 for ((i=0; i<$((${#datatypes[@]})); i++))
 do
@@ -75,9 +75,9 @@ do
         recall=0
         if [[ $(echo ${tp}"+"${fn}">0" | bc -l) != "0" ]]; then recall=$(echo ${tp}"/("${tp}"+"${fn}")" | bc -l); fi
 
-        echo -e ${datatypes[$i]}"\t"${precision}"\t"${recall}
+        echo -e ${datatypes[$i]}"\t"${precision}"\t"${recall}"\t"${pn_rate}
     else
-        echo -e ${datatypes[$i]}"\tNA\tNA"
+        echo -e ${datatypes[$i]}"\tNA\tNA\tNA"
     fi
 done
 
