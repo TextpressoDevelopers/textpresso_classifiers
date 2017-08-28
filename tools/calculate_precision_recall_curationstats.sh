@@ -75,7 +75,7 @@ do
         recall=0
         if [[ $(echo ${tp}"+"${fn}">0" | bc -l) != "0" ]]; then recall=$(echo ${tp}"/("${tp}"+"${fn}")" | bc -l); fi
 
-        echo -e ${datatypes[$i]}"\t"${precision}"\t"${recall}"\t"${pn_rate}
+        echo -e ${datatypes[$i]}"\t"${precision}"\t"${recall}
     else
         echo -e ${datatypes[$i]}"\tNA\tNA"
     fi
