@@ -42,8 +42,8 @@ do
         tot_vn=${tmp}
     fi
     tp=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_tp.csv | wc -l)
-    fp=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_fp/.csv | wc -l)
-    tn=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/predicstion_valn_tn.csv | wc -l)
+    fp=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valp_fp.csv | wc -l)
+    tn=$(awk '{if ($2 == 0) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_tn.csv | wc -l)
     fn=$(awk '{if ($2 == 1) print $0}' ${stored_predictions_root_dir}/${datatypes[$i]}/prediction_valn_fn.csv | wc -l)
 
     if [[ ${tot_vn} != "0" ]]
