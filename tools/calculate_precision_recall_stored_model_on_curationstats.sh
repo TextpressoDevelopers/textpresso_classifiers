@@ -58,10 +58,10 @@ do
         valn_fn_p=$(echo ${valn_fn_p}"*"${pn_rate} | bc -l)
         valn_fn_n=$(echo ${valn_fn_n}"*"${pn_rate} | bc -l)
 
-        tp=$((valp_tp_p + valn_fn_p))
-        fp=$((valp_fp_p + valn_tn_p))
-        tn=$((valn_tn_n + valp_fp_n))
-        fn=$((valn_fn_n + valp_tp_n))
+        tp=$(echo ${valp_tp_p}"+"${valn_fn_p} | bc -l)
+        fp=$(echo ${valp_fp_p}"+"${valn_tn_p} | bc -l)
+        tn=$(echo ${valn_tn_n}"+"${valp_fp_n} | bc -l)
+        fn=$(echo ${valn_fn_n}"+"${valp_tp_n} | bc -l)
 
         precision=0
         if [[ $(echo ${tp}"+"${fp}">0" | bc -l) != "0" ]]; then precision=$(echo ${tp}"/("${tp}"+"${fp}")" | bc -l); fi
