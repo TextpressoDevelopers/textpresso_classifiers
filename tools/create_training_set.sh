@@ -91,7 +91,7 @@ then
         find "${INPUT_DIR}" -name *.pdf | grep -f ${tmpfile_valp_fp} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valp_fp/
         wget -O - -o /dev/null "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCurationStatisticsPapersPage&select_datatypesource=caltech&select_curator=two736&listDatatype="${datatype}"&method=svm%20"neg"%20val%20fn&checkbox_cfp=on&checkbox_afp=on&checkbox_str=on&checkbox_svm=on" | grep -o "name=\"specific_papers\">.*</textarea>" | grep -o "[0-9]\{1,\}" > ${tmpfile_valn_fn}
         wget -O - -o /dev/null "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCurationStatisticsPapersPage&select_datatypesource=caltech&select_curator=two736&listDatatype="${datatype}"&method=svm%20"neg"%20val%20tn&checkbox_cfp=on&checkbox_afp=on&checkbox_str=on&checkbox_svm=on" | grep -o "name=\"specific_papers\">.*</textarea>" | grep -o "[0-9]\{1,\}" > ${tmpfile_valn_tn}
-        find "${INPUT_DIR}" -name *..pdf | grep -f ${tmpfile_valn_tn} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valn_tn/
+        find "${INPUT_DIR}" -name *.pdf | grep -f ${tmpfile_valn_tn} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valn_tn/
         find "${INPUT_DIR}" -name *.pdf | grep -f ${tmpfile_valn_fn} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valn_fn/
         cp ${OUT_DIR}/${datatype}/valp_tp/* ${OUT_DIR}/${datatype}/positive/
         cp ${OUT_DIR}/${datatype}/valp_fp/* ${OUT_DIR}/${datatype}/negative/
