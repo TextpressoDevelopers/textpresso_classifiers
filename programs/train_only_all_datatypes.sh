@@ -10,7 +10,7 @@ function usage {
 INPUT_DIR=""
 FILE_TYPE="pdf"
 
-while [[ $# -gt 1 ]]
+while [[ $# -gt 0 ]]
 do
 key=$1
 
