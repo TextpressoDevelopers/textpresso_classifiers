@@ -87,12 +87,12 @@ then
         tmpfile_valn_fn=$(mktemp)
         wget -O - -o /dev/null "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCurationStatisticsPapersPage&select_datatypesource=caltech&select_curator=two736&listDatatype="${datatype}"&method=svm%20"pos"%20val%20tp&checkbox_cfp=on&checkbox_afp=on&checkbox_str=on&checkbox_svm=on" | grep -o "name=\"specific_papers\">.*</textarea>" | grep -o "[0-9]\{1,\}" > ${tmpfile_valp_tp}
         wget -O - -o /dev/null "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCurationStatisticsPapersPage&select_datatypesource=caltech&select_curator=two736&listDatatype="${datatype}"&method=svm%20"pos"%20val%20fp&checkbox_cfp=on&checkbox_afp=on&checkbox_str=on&checkbox_svm=on" | grep -o "name=\"specific_papers\">.*</textarea>" | grep -o "[0-9]\{1,\}" > ${tmpfile_valp_fp}
-        find "${INPUT_DIR}" -name *.tpcas.gz | grep -f ${tmpfile_valp_tp} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valp_tp/
-        find "${INPUT_DIR}" -name *tpcas.gz | grep -f ${tmpfile_valp_fp} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valp_fp/
+        find "${INPUT_DIR}" -name *.pdf | grep -f ${tmpfile_valp_tp} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valp_tp/
+        find "${INPUT_DIR}" -name *.pdf | grep -f ${tmpfile_valp_fp} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valp_fp/
         wget -O - -o /dev/null "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCurationStatisticsPapersPage&select_datatypesource=caltech&select_curator=two736&listDatatype="${datatype}"&method=svm%20"neg"%20val%20fn&checkbox_cfp=on&checkbox_afp=on&checkbox_str=on&checkbox_svm=on" | grep -o "name=\"specific_papers\">.*</textarea>" | grep -o "[0-9]\{1,\}" > ${tmpfile_valn_fn}
         wget -O - -o /dev/null "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCurationStatisticsPapersPage&select_datatypesource=caltech&select_curator=two736&listDatatype="${datatype}"&method=svm%20"neg"%20val%20tn&checkbox_cfp=on&checkbox_afp=on&checkbox_str=on&checkbox_svm=on" | grep -o "name=\"specific_papers\">.*</textarea>" | grep -o "[0-9]\{1,\}" > ${tmpfile_valn_tn}
-        find "${INPUT_DIR}" -name *.tpcas.gz | grep -f ${tmpfile_valn_tn} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valn_tn/
-        find "${INPUT_DIR}" -name *tpcas.gz | grep -f ${tmpfile_valn_fn} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valn_fn/
+        find "${INPUT_DIR}" -name *..pdf | grep -f ${tmpfile_valn_tn} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valn_tn/
+        find "${INPUT_DIR}" -name *.pdf | grep -f ${tmpfile_valn_fn} | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/valn_fn/
         cp ${OUT_DIR}/${datatype}/valp_tp/* ${OUT_DIR}/${datatype}/positive/
         cp ${OUT_DIR}/${datatype}/valp_fp/* ${OUT_DIR}/${datatype}/negative/
         cp ${OUT_DIR}/${datatype}/valn_tn/* ${OUT_DIR}/${datatype}/negative/
@@ -108,8 +108,8 @@ if [[ ${ORIGINAL_TS_DIR} != "" ]]
 then
     for datatype in $(ls ${ORIGINAL_TS_DIR})
     do
-        find "${INPUT_DIR}" -name *.tpcas.gz | grep -f ${ORIGINAL_TS_DIR}/${datatype}/${datatype}_positive | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/positive/
-        find "${INPUT_DIR}" -name *.tpcas.gz | grep -f ${ORIGINAL_TS_DIR}/${datatype}/${datatype}_negative | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/negative/
+        find "${INPUT_DIR}" -name *.pdf | grep -f ${ORIGINAL_TS_DIR}/${datatype}/${datatype}_positive | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/positive/
+        find "${INPUT_DIR}" -name *.pdf | grep -f ${ORIGINAL_TS_DIR}/${datatype}/${datatype}_negative | xargs -I {} cp "{}" ${OUT_DIR}/${datatype}/negative/
     done
 fi
 
