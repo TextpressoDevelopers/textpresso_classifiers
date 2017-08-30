@@ -17,10 +17,10 @@ def extract_text_from_pdf(file_path: str):
     """
     fulltext = ""
     pdfFileObj = open(file_path, 'rb')
-    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-    for i in range(pdfReader.numPages):
-        pageObj = pdfReader.getPage(i)
-        try:
+    try:
+        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+        for i in range(pdfReader.numPages):
+            pageObj = pdfReader.getPage(i)
             fulltext += pageObj.extractText()
-        except:
-            pass
+    except:
+        return None

@@ -59,7 +59,9 @@ class TextpressoDocumentClassifier:
         for file in os.listdir(dir_path):
             if not os.path.isdir(os.path.join(dir_path, file)):
                 if file_type == "pdf":
-                    self.dataset.data.append(extract_text_from_pdf(file_path=os.path.join(dir_path, file)))
+                    data = extract_text_from_pdf(file_path=os.path.join(dir_path, file))
+                    if data is not None:
+                        self.dataset.data.append(data)
                 elif file_type == "cas_pdf" or file_type == "cas_xml":
                     if file_type == "cas_pdf":
                         cas_type = CasType.PDF
