@@ -19,7 +19,7 @@ from tpclassifydocs import TextpressoDocumentClassifier, CasType
 from sklearn.svm import SVC
 
 __author__ = "Valerio Arnaboldi"
-__license__ = "MIT"
+
 __version__ = "1.0.1"
 
 

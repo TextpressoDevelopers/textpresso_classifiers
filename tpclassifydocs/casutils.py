@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from enum import Enum
 
 __author__ = "Valerio Arnaboldi"
-__license__ = "MIT"
+
 __version__ = "1.0.1"
 
 
