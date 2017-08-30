@@ -53,8 +53,6 @@ case $key in
     elif [[ $1 == "cas" ]]
     then
         FILE_TYPE="*.tpcas.gz"
-    else
-        usage
     fi
     shift
     ;;

@@ -29,8 +29,6 @@ case $key in
     elif [[ $1 == "cas_xml" ]]
     then
         FILE_TYPE="cas_xml"
-    else
-        usage
     fi
     shift
     ;;
