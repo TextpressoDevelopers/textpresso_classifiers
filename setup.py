@@ -17,7 +17,8 @@ setup(name='tpclassifydocs',
           'numpy',
           'typing',
           'namedlist',
-          'PyPDF2'
+          'PyPDF2',
+          'nltk'
       ],
       test_suite='nose.collector',
       tests_require=['nose'],
