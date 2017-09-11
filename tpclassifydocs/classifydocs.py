@@ -222,8 +222,10 @@ class TextpressoDocumentClassifier:
         filenames = []
         for file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, file)
-            filenames.append(file)
             if file_type == "pdf":
+                text = extract_text_from_pdf(file_path)
+                if text is None:
+                    continue
                 data.append(extract_text_from_pdf(file_path))
             else:
                 if file_type == "cas_pdf":
@@ -232,6 +234,7 @@ class TextpressoDocumentClassifier:
                     cas_type = CasType.XML
                 data.append(extract_text_from_cas_content(read_compressed_cas_content(file_path=file_path),
                             cas_type=cas_type))
+            filenames.append(file)
         tr_features = self.vectorizer.transform(data)
         if self.feature_selector is not None:
             best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
