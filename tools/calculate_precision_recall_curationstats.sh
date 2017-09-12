@@ -5,7 +5,7 @@
 
 datatypes=("antibody" "catalyticact" "expression_cluster" "geneint" "geneprod" "genereg" "newmutant" "otherexpr" \
 "overexpr" "rnai" "seqchange" "structcorr")
-dtindices=(1 3 5 7 8 9 14 16 17 19 20 22)
+dtindices=(1 3 5 7 8 9 13 15 16 18 19 21)
 
 tmpfile=$(mktemp)
 wget -o /dev/null --post-data="select_curator=two736&action=Curation+Statistics+Page&checkbox_all_datatypes=all&checkbox_all_flagging_methods=all" "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi" -O ${tmpfile}
