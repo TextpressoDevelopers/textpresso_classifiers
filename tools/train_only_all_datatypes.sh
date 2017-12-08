@@ -10,6 +10,8 @@ function usage {
 INPUT_DIR=""
 FILE_TYPE="pdf"
 
+models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
+
 while [[ $# -gt 0 ]]
 do
 key=$1
@@ -56,7 +58,10 @@ for datatype in $(ls ${INPUT_DIR})
 do
     if [ -d ${INPUT_DIR}/${datatype} ]
     then
-        ./boost_classifier.py -t ${INPUT_DIR}/${datatype} -c ${INPUT_DIR}/${datatype}/model.pkl -f ${FILE_TYPE} &
+        for model in ${models[@]}
+        do
+            ../programs/tpclassifier.py -t ${INPUT_DIR}/${datatype} -c ${INPUT_DIR}/${datatype}/${model}.pkl -f ${FILE_TYPE} -m ${model} &
+        done
     fi
 done
 wait

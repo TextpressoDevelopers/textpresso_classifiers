@@ -5,12 +5,12 @@ import random
 from sklearn import metrics, feature_selection
 
 from namedlist import namedlist
-from tpclassifydocs.casutils import *
+from tpclassifier.casutils import *
 from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer, TfidfTransformer
 from typing import Tuple
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
-from tpclassifydocs.pdfutils import extract_text_from_pdf
+from tpclassifier.pdfutils import extract_text_from_pdf
 
 __author__ = "Valerio Arnaboldi"
 

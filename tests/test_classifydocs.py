@@ -2,7 +2,7 @@
 
 import unittest
 import os
-from tpclassifydocs.classifydocs import TextpressoDocumentClassifier, CasType
+from tpclassifier.classifydocs import TextpressoDocumentClassifier, CasType
 from sklearn import svm
 
 __author__ = "Valerio Arnaboldi"

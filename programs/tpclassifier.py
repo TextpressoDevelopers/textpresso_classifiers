@@ -7,8 +7,17 @@ import argparse
 import os
 
 import pickle
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from tpclassifydocs import TextpressoDocumentClassifier, CasType
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
+from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from tpclassifier import TextpressoDocumentClassifier, CasType
 
 __author__ = "Valerio Arnaboldi"
 
@@ -30,8 +39,18 @@ def main():
                         help="config file where to store the model or from which to read a previously trained one")
     parser.add_argument("-f", "--file-type", metavar="file_type", dest="file_type", type=str, default="pdf",
                         choices=["pdf", "cas_pdf", "cas_xml"], help="type of files to be processed")
+    parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM",
+                        choiches=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
+                                  "XGBOOST"])
 
     args = parser.parse_args()
+
+    models = {"KNN": (False, KNeighborsClassifier(3)), "SVM_LINEAR": (False, SVC(kernel="linear")),
+              "SVM_NONLINEAR": (False, SVC()), "TREE": (False, DecisionTreeClassifier()),
+              "RF": (False, RandomForestClassifier()), "MLP": (False, MLPClassifier(alpha=1)),
+              "NAIVEB": (True, GaussianNB()),
+              "GAUSS": (True, GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True)),
+              "LDA": (True, QuadraticDiscriminantAnalysis()), "XGBOOST": (True, GradientBoostingClassifier())}
 
     if args.training_dir is not None:
         classifier = TextpressoDocumentClassifier()
@@ -45,9 +64,9 @@ def main():
             classifier.generate_training_and_test_sets(percentage_training=1)
         classifier.extract_features(use_hashing=False, ngram_range=(1, 2), lemmatization=False, stop_words="english",
                                     top_n_feat=50000)
-        classifier.train_classifier(model=GradientBoostingClassifier(), dense=True)
+        classifier.train_classifier(model=models[args.model][2], dense=models[args.model][1])
         if args.test:
-            test_res = classifier.test_classifier(dense=True)
+            test_res = classifier.test_classifier(dense=models[args.model][1])
             print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
 
         classifier.dataset.data = []

@@ -59,7 +59,7 @@ for datatype in $(ls ${INPUT_DIR})
 do
     if [ -d ${INPUT_DIR}/${datatype} ]
     then
-        paste <(echo ${datatype}) <(./boost_classifier.py -t ${INPUT_DIR}/${datatype} -T -c ${INPUT_DIR}/${datatype}/model.pkl -f ${FILE_TYPE}) >> ${INPUT_DIR}/${datatype}/results.txt &
+        paste <(echo ${datatype}) <(../programs/tpclassifier.py -t ${INPUT_DIR}/${datatype} -T -c ${INPUT_DIR}/${datatype}/model.pkl -f ${FILE_TYPE}) >> ${INPUT_DIR}/${datatype}/results.txt &
     fi
 done
 wait

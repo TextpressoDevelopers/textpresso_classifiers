@@ -15,7 +15,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from tpclassifydocs import TextpressoDocumentClassifier, CasType
+from tpclassifier import TextpressoDocumentClassifier, CasType
 from sklearn.svm import SVC
 
 __author__ = "Valerio Arnaboldi"
