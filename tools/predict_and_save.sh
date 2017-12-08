@@ -69,10 +69,10 @@ do
         for model in ${model[@]}
         do
             mkdir -p ${data_dir}/${datatype}/${model}
-            ../programs/tpclassifier.py -p ${data_dir}/${datatype}/valp_tp -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_tp.csv &
-            ../programs/tpclassifier.py -p ${data_dir}/${datatype}/valp_fp -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_fp.csv &
-            ../programs/tpclassifier.py -p ${data_dir}/${datatype}/valn_tn -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_tn.csv &
-            ../programs/tpclassifier.py -p ${data_dir}/${datatype}/valn_fn -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_fn.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valp_tp -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_tp.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valp_fp -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_fp.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valn_tn -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_tn.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valn_fn -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_fn.csv &
         done
     fi
 done

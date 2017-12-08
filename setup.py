@@ -20,6 +20,7 @@ setup(name='tpclassifier',
           'PyPDF2',
           'nltk'
       ],
+      scripts=['bin/tp_doc_classifier.py'],
       test_suite='nose.collector',
       tests_require=['nose'],
       zip_safe=False)

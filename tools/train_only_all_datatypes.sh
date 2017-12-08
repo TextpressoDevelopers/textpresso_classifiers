@@ -60,7 +60,7 @@ do
     then
         for model in ${models[@]}
         do
-            ../programs/tpclassifier.py -t ${INPUT_DIR}/${datatype} -c ${INPUT_DIR}/${datatype}/${model}.pkl -f ${FILE_TYPE} -m ${model} &
+            tp_doc_classifier.py -t ${INPUT_DIR}/${datatype} -c ${INPUT_DIR}/${datatype}/${model}.pkl -f ${FILE_TYPE} -m ${model} &
         done
     fi
 done
