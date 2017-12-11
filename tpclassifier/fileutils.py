@@ -1,10 +1,11 @@
-"""Utilities to manage CAS files"""
+"""Utilities to transform pdf and CAS files into feature vectors for the classifiers"""
 
 import html
 import re
 import gzip
 import xml.etree.ElementTree as ET
 from enum import Enum
+import PyPDF2
 
 __author__ = "Valerio Arnaboldi"
 
@@ -74,3 +75,22 @@ def extract_text_from_article_xml(text: str):
         if child.tag == "body":
             return "".join(child.itertext())
 
+
+def extract_text_from_pdf(file_path: str):
+    """extract the fulltext of an article from a pdf file
+
+    :param file_path: the path to the pdf file
+    :type file_path: str
+    :return: the fulltext of the article represented by the cas file
+    :rtype: str
+    """
+    fulltext = ""
+    pdfFileObj = open(file_path, 'rb')
+    try:
+        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+        for i in range(pdfReader.numPages):
+            pageObj = pdfReader.getPage(i)
+            fulltext += pageObj.extractText()
+        return fulltext
+    except:
+        return None

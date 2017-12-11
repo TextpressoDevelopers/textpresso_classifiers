@@ -1,24 +1,32 @@
-"""Classify Textpresso documents into categories"""
+"""Train and apply document classifiers for Textpresso literature"""
 
 import os
 import random
 from sklearn import metrics, feature_selection
-
 from namedlist import namedlist
-from tpclassifier.casutils import *
+from tpclassifier.fileutils import *
 from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer, TfidfTransformer
 from typing import Tuple
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
-from tpclassifier.pdfutils import extract_text_from_pdf
 
 __author__ = "Valerio Arnaboldi"
 
 __version__ = "1.0.1"
 
 
-DatasetStruct = namedlist("DatasetStruct", "data, filenames, target, tr_features")
-TestResults = namedlist("TestResults", "precision, recall, accuracy, roc")
+DatasetStruct_ = namedlist("DatasetStruct", "data, filenames, target, tr_features")
+TestResults_ = namedlist("TestResults", "precision, recall, accuracy, roc")
+
+
+class DatasetStruct(DatasetStruct_):
+    """structure that defines fields of a dataset"""
+    pass
+
+
+class TestResults(TestResults_):
+    """List that contains the different values obtained while testing a classifier"""
+    pass
 
 
 class LemmaTokenizer(object):
@@ -43,7 +51,7 @@ class TextpressoDocumentClassifier:
     def add_classified_docs_to_dataset(self, dir_path: str = None, recursive: bool = True,
                                        file_type: str = "pdf", category: int = 1):
         """load the text from the cas files in the specified directory and add them to the dataset,
-        assigning the specified category value
+        assigning them to the specified category (class)
 
         Note that only files with .tpcas.gz extension will be loaded
 

@@ -2,7 +2,7 @@
 
 import unittest
 import os
-from tpclassifier.casutils import *
+from tpclassifier.fileutils import *
 
 
 __author__ = "Valerio Arnaboldi"

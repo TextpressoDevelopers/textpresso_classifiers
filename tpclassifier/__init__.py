@@ -1,2 +1,2 @@
-from .classifydocs import TextpressoDocumentClassifier
-from .casutils import *
+from .classifiers import TextpressoDocumentClassifier
+from .fileutils import *
