@@ -25,7 +25,8 @@ __version__ = "1.0.1"
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train a classifier and use it to classify documents")
+    parser = argparse.ArgumentParser(description="Train a binary classifier and use it to classify Textpresso documents"
+                                     " in pdf or CAS format")
     parser.add_argument("-t", "--train", metavar="training_dir", dest="training_dir", type=str, default=None,
                         help="train the classifier with the data in the provided directory (there must be two subdirs, "
                              "one named 'positive' containing positive observations and one named 'negative' for "
@@ -40,8 +41,18 @@ def main():
     parser.add_argument("-f", "--file-type", metavar="file_type", dest="file_type", type=str, default="pdf",
                         choices=["pdf", "cas_pdf", "cas_xml"], help="type of files to be processed")
     parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM",
-                        choiches=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
-                                  "XGBOOST"])
+                        choices=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
+                                 "XGBOOST"])
+    parser.add_argument("-h", "--hash-trick", dest="hash_trick", action="store_true", default=False,
+                        help="use the hash trick to vectorize features (https://en.wikipedia.org/wiki/Feature_hashing)")
+    parser.add_argument("-n", "--ngram-size", metavar="ngram_size", dest="ngram_size", type=int, default=1,
+                        help="number of consecutive words to be considered as a single feature")
+    parser.add_argument("-b", "--best-features-num", metavar="best_features_size", dest="best_features_size", type=int,
+                        default=20000, help="number of top features to be included in the model after feature "
+                                            "selection")
+    parser.add_argument("-l", "--lemmatize-words", dest="lemmatize", action="store_true", default=False,
+                        help="apply lemmatization to text before the analysis "
+                             "(https://en.wikipedia.org/wiki/Lemmatisation)")
 
     args = parser.parse_args()
 
@@ -62,11 +73,12 @@ def main():
             classifier.generate_training_and_test_sets(percentage_training=0.8)
         else:
             classifier.generate_training_and_test_sets(percentage_training=1)
-        classifier.extract_features(use_hashing=False, ngram_range=(1, 2), lemmatization=False, stop_words="english",
-                                    top_n_feat=50000)
-        classifier.train_classifier(model=models[args.model][2], dense=models[args.model][1])
+        classifier.extract_features(use_hashing=args.hash_trick, ngram_range=(1, args.ngram_size),
+                                    lemmatization=args.lemmatize, stop_words="english",
+                                    top_n_feat=args.best_features_size)
+        classifier.train_classifier(model=models[args.model][1], dense=models[args.model][0])
         if args.test:
-            test_res = classifier.test_classifier(dense=models[args.model][1])
+            test_res = classifier.test_classifier(dense=models[args.model][0])
             print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
 
         classifier.dataset.data = []
