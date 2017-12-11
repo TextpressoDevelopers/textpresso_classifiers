@@ -43,7 +43,7 @@ def main():
     parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM",
                         choices=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
                                  "XGBOOST"])
-    parser.add_argument("-h", "--hash-trick", dest="hash_trick", action="store_true", default=False,
+    parser.add_argument("-H", "--hash-trick", dest="hash_trick", action="store_true", default=False,
                         help="use the hash trick to vectorize features (https://en.wikipedia.org/wiki/Feature_hashing)")
     parser.add_argument("-n", "--ngram-size", metavar="ngram_size", dest="ngram_size", type=int, default=1,
                         help="number of consecutive words to be considered as a single feature")
