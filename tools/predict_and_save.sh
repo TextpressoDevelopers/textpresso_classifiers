@@ -15,6 +15,7 @@ fi
 model_dir=""
 data_dir=""
 FILE_TYPE="pdf"
+models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
 
 while [[ $# -gt 1 ]]
 do
@@ -66,7 +67,7 @@ for datatype in $(ls ${model_dir})
 do
     if [ -d ${model_dir}/${datatype} ]
     then
-        for model in ${model[@]}
+        for model in ${models[@]}
         do
             mkdir -p ${data_dir}/${datatype}/${model}
             tp_doc_classifier.py -p ${data_dir}/${datatype}/valp_tp -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_tp.csv &
