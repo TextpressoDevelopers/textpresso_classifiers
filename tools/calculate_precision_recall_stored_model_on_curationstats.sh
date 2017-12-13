@@ -13,7 +13,7 @@ models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "L
 tmpfile=$(mktemp)
 wget -o /dev/null --post-data="select_curator=two736&action=Curation+Statistics+Page&checkbox_all_datatypes=all&checkbox_all_flagging_methods=all" "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi" -O ${tmpfile}
 
-echo -e "DATATYPE\tMODEL\tPRECISION\tRECALL"
+echo -e "DATATYPE\tMODEL\tTP\tFP\tTN\tFN\tPRECISION\tRECALL"
 
 for ((i=0; i<$((${#datatypes[@]})); i++))
 do
@@ -71,9 +71,9 @@ do
             recall=0
             if [[ $(echo ${tp}"+"${fn}">0" | bc -l) != "0" ]]; then recall=$(echo ${tp}"/("${tp}"+"${fn}")" | bc -l); fi
 
-            echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${precision}"\t"${recall}
+            echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${tp}"\t"${fp}"\t"${tn}"\t"${fn}"\t"${precision}"\t"${recall}
         else
-            echo -e ${datatypes[$i]}"\t"${models[$j]}"\tNA\tNA"
+            echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${tp}"\t"${fp}"\t"${tn}"\t"${fn}"\tNA\tNA"
         fi
     done
 done

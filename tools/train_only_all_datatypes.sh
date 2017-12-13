@@ -3,12 +3,16 @@
 function usage {
     echo "usage: $(basename $0) [-t] <input_dir>"
     echo "  -t --type                set the file type. Accepted values are pdf or cas"
+    echo "  -n --ngram-size          set the n-gram size"
+    echo "  -m --max-features        set the maximum number of best features to be kept for feature selection"
     echo "  -h --help                display help"
     exit 1
 }
 
 INPUT_DIR=""
 FILE_TYPE="pdf"
+NGRAM_SIZE="2"
+MAX_FEATURES="20000"
 
 models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
 
@@ -32,6 +36,16 @@ case $key in
     then
         FILE_TYPE="cas_xml"
     fi
+    shift
+    ;;
+    -n|--ngram-size)
+    shift
+    NGRAM_SIZE="$key"
+    shift
+    ;;
+    -m|--max-features)
+    shift
+    MAX_FEATURES="$key"
     shift
     ;;
     -h|--help)
@@ -60,7 +74,7 @@ do
     then
         for model in ${models[@]}
         do
-            tp_doc_classifier.py -t ${INPUT_DIR}/${datatype} -c ${INPUT_DIR}/${datatype}/${model}.pkl -f ${FILE_TYPE} -m ${model} -n 2 &
+            tp_doc_classifier.py -t ${INPUT_DIR}/${datatype} -c ${INPUT_DIR}/${datatype}/${model}.pkl -f ${FILE_TYPE} -m ${model} -n ${NGRAM_SIZE} -b ${MAX_FEATURES} &
         done
     fi
     wait

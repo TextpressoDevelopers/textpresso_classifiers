@@ -25,7 +25,7 @@ __version__ = "1.0.1"
 
 def main():
     parser = argparse.ArgumentParser(description="Train and test a set of classifiers for the classification of "
-                                                 "Textpresso documents")
+                                                 "Textpresso documents and compare their prediction accuracy")
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", default="info.log", type=str,
                         help="path to log file")
     parser.add_argument("-L", "--log-level", metavar="log_level", dest="log_level", default="INFO",
