@@ -190,13 +190,15 @@ class TextpressoDocumentClassifier:
         roc = metrics.roc_curve(test_set.target, pred)
         return TestResults(precision, recall, accuracy, roc)
 
-    def predict_file(self, file_path: str, file_type: str = "pdf"):
+    def predict_file(self, file_path: str, file_type: str = "pdf", dense: bool = False):
         """predict the class of a single file
 
         :param file_path: the path to the file
         :type file_path: str
         :param file_type: the type of file
         :type file_type: str
+        :param dense: whether to transform the sparse matrix of features to a dense structure (required by some models)
+        :type dense: bool
         :return: the class predicted by the classifier
         :rtype: int
         """
@@ -214,15 +216,20 @@ class TextpressoDocumentClassifier:
             best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
                                        reverse=True)
             tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
-        return self.classifier.predict(self.vectorizer.transform(tr_features))
+        if dense:
+            return self.classifier.predict(self.vectorizer.transform(tr_features))
+        else:
+            return self.classifier.predict(self.vectorizer.transform(tr_features))
 
-    def predict_files(self, dir_path: str, file_type: str = "pdf"):
+    def predict_files(self, dir_path: str, file_type: str = "pdf", dense: bool = False):
         """predict the class of a set of files in a directory
 
         :param dir_path: the path to the directory containg the files to be classified
         :type dir_path: str
         :param file_type: the type of files
         :type file_type: str
+        :param dense: whether to transform the sparse matrix of features to a dense structure (required by some models)
+        :type dense: bool
         :return: the file names of the classified documents along with the classes predicted by the classifier
         :rtype: Tuple[List[str], List[int]]
         """
@@ -248,4 +255,7 @@ class TextpressoDocumentClassifier:
             best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
                                        reverse=True)
             tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
-        return filenames, self.classifier.predict(tr_features)
+        if dense:
+            return filenames, self.classifier.predict(tr_features.todense())
+        else:
+            return filenames, self.classifier.predict(tr_features)
