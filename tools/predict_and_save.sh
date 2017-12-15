@@ -76,10 +76,10 @@ do
         for model in ${models[@]}
         do
             mkdir -p ${data_dir}/${datatype}/${model}
-            tp_doc_classifier.py -p ${data_dir}/${datatype}/valp_tp -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_tp.csv &
-            tp_doc_classifier.py -p ${data_dir}/${datatype}/valp_fp -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_fp.csv &
-            tp_doc_classifier.py -p ${data_dir}/${datatype}/valn_tn -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_tn.csv &
-            tp_doc_classifier.py -p ${data_dir}/${datatype}/valn_fn -c ${model_dir}/${datatype}/${model}.pkl -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_fn.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valp_tp -c ${model_dir}/${datatype}/${model}.pkl -m ${model} -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_tp.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valp_fp -c ${model_dir}/${datatype}/${model}.pkl -m ${model} -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valp_fp.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valn_tn -c ${model_dir}/${datatype}/${model}.pkl -m ${model} -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_tn.csv &
+            tp_doc_classifier.py -p ${data_dir}/${datatype}/valn_fn -c ${model_dir}/${datatype}/${model}.pkl -m ${model} -f ${FILE_TYPE} > ${data_dir}/${datatype}/${model}/prediction_valn_fn.csv &
             if [[ ${wait_after_model} == "true" ]]
             then
                 wait
