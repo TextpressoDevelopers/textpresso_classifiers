@@ -5,7 +5,7 @@ import random
 from sklearn import metrics, feature_selection
 from namedlist import namedlist
 from tpclassifier.fileutils import *
-from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer, TfidfTransformer, CountVectorizer
 from typing import Tuple
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -19,8 +19,19 @@ DatasetStruct_ = namedlist("DatasetStruct", "data, filenames, target, tr_feature
 TestResults_ = namedlist("TestResults", "precision, recall, accuracy, roc")
 
 
+class TokenizerType(Enum):
+    BOW = 1
+    TFIDF = 2
+    HASH = 3
+
+
 class DatasetStruct(DatasetStruct_):
-    """structure that defines fields of a dataset"""
+    """structure that defines fields of a dataset
+
+    This data structure is used to store the properties of training sets and test sets within the models, so that the
+    textual content and the file names of the documents used to create the classifiers are included with them and they
+    can be easily retrieved.
+    """
     pass
 
 
@@ -102,14 +113,14 @@ class TextpressoDocumentClassifier:
             self.test_set.filenames = [self.dataset.filenames[i] for i in test_set_idx]
             self.test_set.target = [self.dataset.target[i] for i in test_set_idx]
 
-    def extract_features(self, use_hashing: bool = False, ngram_range: Tuple[int, int] = (1, 1),
+    def extract_features(self, tokenizer_type: TokenizerType = TokenizerType.BOW, ngram_range: Tuple[int, int] = (1, 1),
                          lemmatization: bool = False, top_n_feat: int = None, stop_words = "english",
                          max_df: float = 1.0, max_features: int = None):
         """perform feature extraction with tfidf normalization on training and test sets and store the transformed
         features
 
-        :param use_hashing: whether to use a HasingVectorizer (recommended for very large datasets) or a CountVectorizer
-        :type use_hashing: bool
+        :param tokenizer_type: the type of tokenizer to use for feature extraction
+        :type tokenizer_type: TokenizerType
         :param ngram_range: The lower and upper boundary of the range of n-values for different n-grams to be extracted.
             All values of n such that min_n <= n <= max_n will be used.
         :type ngram_range: Tuple[int, int]
@@ -123,7 +134,17 @@ class TextpressoDocumentClassifier:
         :param max_features: consider only the best n features sorted by tfidf
         :type max_features: int
         """
-        if use_hashing:
+        if tokenizer_type == TokenizerType.BOW:
+            if lemmatization:
+                self.vectorizer = CountVectorizer(stop_words=stop_words, ngram_range=ngram_range,
+                                                  tokenizer=LemmaTokenizer(), max_df=max_df, max_features=max_features)
+            else:
+                self.vectorizer = CountVectorizer(stop_words=stop_words, ngram_range=ngram_range, max_df=max_df,
+                                                  max_features=max_features)
+            self.training_set.tr_features = self.vectorizer.fit_transform(self.training_set.data)
+            if len(self.test_set.data) > 0:
+                self.test_set.tr_features = self.vectorizer.transform(self.test_set.data)
+        elif tokenizer_type == TokenizerType.HASH:
             if lemmatization:
                 self.vectorizer = HashingVectorizer(stop_words=stop_words, ngram_range=ngram_range,
                                                     tokenizer=LemmaTokenizer())
@@ -135,7 +156,7 @@ class TextpressoDocumentClassifier:
             if len(self.test_set.data) > 0:
                 test_counts = self.vectorizer.transform(self.test_set.data)
                 self.test_set.tr_features = tfidf_transformer.transform(test_counts)
-        else:
+        elif tokenizer_type == TokenizerType.TFIDF:
             if lemmatization:
                 self.vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=ngram_range,
                                                   tokenizer=LemmaTokenizer(), max_df=max_df, max_features=max_features)

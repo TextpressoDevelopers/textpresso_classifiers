@@ -42,9 +42,10 @@ def main():
                         choices=["pdf", "cas_pdf", "cas_xml"], help="type of files to be processed")
     parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM",
                         choices=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
-                                 "XGBOOST"])
-    parser.add_argument("-H", "--hash-trick", dest="hash_trick", action="store_true", default=False,
-                        help="use the hash trick to vectorize features (https://en.wikipedia.org/wiki/Feature_hashing)")
+                                 "XGBOOST"], help="type of model to use")
+    parser.add_argument("-z", "--tokenizer-type", dest="tokenizer_type", metavatr="tokenizer_type", type=str,
+                        default="BOW", choices=["BOW", "TFIDF", "HASH"], help="type of tokenizer to use for "
+                                                                              "feature extraction")
     parser.add_argument("-n", "--ngram-size", metavar="ngram_size", dest="ngram_size", type=int, default=1,
                         help="number of consecutive words to be considered as a single feature")
     parser.add_argument("-b", "--best-features-num", metavar="best_features_size", dest="best_features_size", type=int,
@@ -73,7 +74,7 @@ def main():
             classifier.generate_training_and_test_sets(percentage_training=0.8)
         else:
             classifier.generate_training_and_test_sets(percentage_training=1)
-        classifier.extract_features(use_hashing=args.hash_trick, ngram_range=(1, args.ngram_size),
+        classifier.extract_features(tokenizer_type=args.tokenizer_type, ngram_range=(1, args.ngram_size),
                                     lemmatization=args.lemmatize, stop_words="english",
                                     top_n_feat=args.best_features_size)
         classifier.train_classifier(model=models[args.model][1], dense=models[args.model][0])
