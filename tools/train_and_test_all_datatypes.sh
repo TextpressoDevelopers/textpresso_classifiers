@@ -4,11 +4,17 @@ function usage {
     echo "usage: $(basename $0) [-t] <input_dir>"
     echo "  -t --type                set the file type. Accepted values are pdf or cas"
     echo "  -h --help                display help"
+    echo "  -n --ngram-size          set the n-gram size"
+    echo "  -m --max-features        set the maximum number of best features to be kept for feature selection"
     exit 1
 }
 
 INPUT_DIR=""
 FILE_TYPE="pdf"
+NGRAM_SIZE="2"
+MAX_FEATURES="20000"
+
+models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
 
 while [[ $# -gt 1 ]]
 do
@@ -32,6 +38,16 @@ case $key in
     fi
     shift
     ;;
+    -n|--ngram-size)
+    shift
+    NGRAM_SIZE="$key"
+    shift
+    ;;
+    -m|--max-features)
+    shift
+    MAX_FEATURES="$key"
+    shift
+    ;;
     -h|--help)
     usage
     ;;
@@ -53,18 +69,15 @@ then
 fi
 
 # remove previous results
-echo -e "datatype\tprecision\trecall\taccuracy" > ${INPUT_DIR}/results.txt
+echo -e "DATATYPE\tMODEL\tPRECISION\tRECALL\tF_MEASURE"
 
 for datatype in $(ls ${INPUT_DIR})
 do
     if [ -d ${INPUT_DIR}/${datatype} ]
     then
-        paste <(echo ${datatype}) <(tp_doc_classifier.py -t ${INPUT_DIR}/${datatype} -T -c ${INPUT_DIR}/${datatype}/model.pkl -f ${FILE_TYPE}) >> ${INPUT_DIR}/${datatype}/results.txt &
+        for model in ${models[@]}
+        do
+          paste <(echo -e ${datatype}"\t"${model}) <(tp_doc_classifier.py -t ${INPUT_DIR}/${datatype} -T -c ${INPUT_DIR}/${datatype}/${model}_test.pkl -f ${FILE_TYPE} -m ${model} -n ${NGRAM_SIZE} -b ${MAX_FEATURES})
+        done
     fi
-done
-wait
-for datatype in $(ls ${INPUT_DIR})
-do
-    cat ${INPUT_DIR}/${datatype}/results.txt >> ${INPUT_DIR}/results.txt
-    rm ${INPUT_DIR}/${datatype}/results.txt
 done
