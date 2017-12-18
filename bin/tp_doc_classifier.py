@@ -43,7 +43,7 @@ def main():
     parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM",
                         choices=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
                                  "XGBOOST"], help="type of model to use")
-    parser.add_argument("-z", "--tokenizer-type", dest="tokenizer_type", metavatr="tokenizer_type", type=str,
+    parser.add_argument("-z", "--tokenizer-type", dest="tokenizer_type", metavar="tokenizer_type", type=str,
                         default="BOW", choices=["BOW", "TFIDF", "HASH"], help="type of tokenizer to use for "
                                                                               "feature extraction")
     parser.add_argument("-n", "--ngram-size", metavar="ngram_size", dest="ngram_size", type=int, default=1,
