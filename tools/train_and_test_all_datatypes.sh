@@ -16,7 +16,7 @@ MAX_FEATURES="20000"
 
 models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
 
-while [[ $# -gt 1 ]]
+while [[ $# -gt 0 ]]
 do
 key=$1
 
