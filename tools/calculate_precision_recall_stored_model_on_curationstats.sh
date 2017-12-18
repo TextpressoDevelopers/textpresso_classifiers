@@ -72,7 +72,7 @@ do
             if [[ $(echo ${tp}"+"${fn}">0" | bc -l) != "0" ]]; then recall=$(echo ${tp}"/("${tp}"+"${fn}")" | bc -l); fi
 
             fmeasure=0
-            if [[ $(echo ${precision}"+"${recall}">0" | bc -l) != "0" ]]; then fmeasure=$(echo "2*("${precision}"*"${recall}")/("${precision}"+"${recall}")"); fi
+            if [[ $(echo ${precision}"+"${recall}">0" | bc -l) != "0" ]]; then fmeasure=$(echo "2*("${precision}"*"${recall}")/("${precision}"+"${recall}")" | bc -l); fi
             echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${tp}"\t"${fp}"\t"${tn}"\t"${fn}"\t"${precision}"\t"${recall}"\t"${fmeasure}
         else
             echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${tp}"\t"${fp}"\t"${tn}"\t"${fn}"\tNA\tNA\tNA"
