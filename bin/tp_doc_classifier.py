@@ -18,6 +18,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from tpclassifier import TextpressoDocumentClassifier, CasType
+from tpclassifier.classifiers import TokenizerType
 
 __author__ = "Valerio Arnaboldi"
 
@@ -57,6 +58,12 @@ def main():
 
     args = parser.parse_args()
 
+    tokenizer = TokenizerType.TFIDF
+    if args.tokenizer_type == "BOW":
+        tokenizer = TokenizerType.BOW
+    elif args.tokenizer_type == "HASH":
+        tokenizer = TokenizerType.HASH
+
     models = {"KNN": (False, KNeighborsClassifier(3)), "SVM_LINEAR": (False, SVC(kernel="linear")),
               "SVM_NONLINEAR": (False, SVC()), "TREE": (False, DecisionTreeClassifier()),
               "RF": (False, RandomForestClassifier()), "MLP": (False, MLPClassifier(alpha=1)),
@@ -74,7 +81,7 @@ def main():
             classifier.generate_training_and_test_sets(percentage_training=0.8)
         else:
             classifier.generate_training_and_test_sets(percentage_training=1)
-        classifier.extract_features(tokenizer_type=args.tokenizer_type, ngram_range=(1, args.ngram_size),
+        classifier.extract_features(tokenizer_type=tokenizer, ngram_range=(1, args.ngram_size),
                                     lemmatization=args.lemmatize, stop_words="english",
                                     top_n_feat=args.best_features_size)
         classifier.train_classifier(model=models[args.model][1], dense=models[args.model][0])
