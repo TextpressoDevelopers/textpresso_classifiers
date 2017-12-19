@@ -69,7 +69,7 @@ then
 fi
 
 # remove previous results
-echo -e "DATATYPE\tMODEL\tPRECISION\tRECALL\tF_MEASURE" > ${INPUT_DIR}/test_models.csv
+echo -e "DATATYPE\tMODEL\tPRECISION\tRECALL\tF_MEASURE"
 
 for datatype in $(ls ${INPUT_DIR})
 do
@@ -77,7 +77,7 @@ do
     then
         for model in ${models[@]}
         do
-          paste <(echo -e ${datatype}"\t"${model}) <(tp_doc_classifier.py -t ${INPUT_DIR}/${datatype} -T -c ${INPUT_DIR}/${datatype}/${model}_test.pkl -f ${FILE_TYPE} -m ${model} -n ${NGRAM_SIZE} -b ${MAX_FEATURES} -z TFIDF) >> test_models.csv
+          echo -e ${datatype}"\t"${model}"\t"$(tp_doc_classifier.py -t ${INPUT_DIR}/${datatype} -T -c ${INPUT_DIR}/${datatype}/${model}_test.pkl -f ${FILE_TYPE} -m ${model} -n ${NGRAM_SIZE} -b ${MAX_FEATURES} -z TFIDF)
         done
     fi
 done
