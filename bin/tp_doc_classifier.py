@@ -32,8 +32,8 @@ def main():
                              "one named 'positive' containing positive observations and one named 'negative' for "
                              "negative ones")
     parser.add_argument("-T", "--test", dest="test", action="store_true", default=False,
-                        help="test the classifier on a test set, which is built as 80 percent of observations randomly "
-                             "selected (and removed) from the training set")
+                        help="test the classifier on a test set, which is built as 20 percent of observations randomly "
+                             "selected (and removed before training) from the training set")
     parser.add_argument("-p", "--predict", metavar="prediction_dir", dest="prediction_dir", type=str, default=None,
                         help="classify papers in the specified directory")
     parser.add_argument("-c", "--config", metavar="config_file", dest="config_file", type=str, default=".config",
@@ -44,7 +44,7 @@ def main():
                         choices=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
                                  "XGBOOST"], help="type of model to use")
     parser.add_argument("-z", "--tokenizer-type", dest="tokenizer_type", metavar="tokenizer_type", type=str,
-                        default="BOW", choices=["BOW", "TFIDF", "HASH"], help="type of tokenizer to use for "
+                        default="TFIDF", choices=["BOW", "TFIDF", "HASH"], help="type of tokenizer to use for "
                                                                               "feature extraction")
     parser.add_argument("-n", "--ngram-size", metavar="ngram_size", dest="ngram_size", type=int, default=1,
                         help="number of consecutive words to be considered as a single feature")
