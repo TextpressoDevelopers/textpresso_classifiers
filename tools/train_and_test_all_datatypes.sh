@@ -69,7 +69,7 @@ then
 fi
 
 # remove previous results
-echo -e "DATATYPE\tMODEL\tPRECISION\tRECALL\tF_MEASURE"
+echo -e "DATATYPE\tMODEL\tPRECISION\tRECALL\tACCURACY"
 
 for datatype in $(ls ${INPUT_DIR})
 do
