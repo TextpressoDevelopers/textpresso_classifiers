@@ -40,12 +40,12 @@ case $key in
     ;;
     -n|--ngram-size)
     shift
-    NGRAM_SIZE="$key"
+    NGRAM_SIZE="$1"
     shift
     ;;
     -m|--max-features)
     shift
-    MAX_FEATURES="$key"
+    MAX_FEATURES="$1"
     shift
     ;;
     -h|--help)
