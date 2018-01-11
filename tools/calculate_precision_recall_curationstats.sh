@@ -3,6 +3,38 @@
 ### calculate estimated precision and recall values on data obtained from curation status page by balancing the
 ### validation and assuming that the curator should have evaluated an equal number of positive and negative results
 
+function usage {
+    echo "usage: $(basename $0) [-e]"
+    echo "  -e --estimate-true-recall  use a weighting scheme based on the ratio between positive and negative validated papers to estimate true recall and precision"
+    echo "  -h --help                  display help"
+    exit 1
+}
+
+ESTIMATE="false"
+
+models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
+
+while [[ $# -gt 0 ]]
+do
+key=$1
+
+case $key in
+    -h|--help)
+    usage
+    ;;
+    -e|--estimate-true-recall)
+    ESTIMATE="true"
+    shift
+    ;;
+    -h|--help)
+    usage
+    ;;
+    *)
+    shift
+    ;;
+esac
+done
+
 datatypes=("antibody" "catalyticact" "expression_cluster" "geneint" "geneprod" "genereg" "newmutant" "otherexpr" \
 "overexpr" "rnai" "seqchange" "structcorr")
 dtindices=(1 3 5 7 8 9 13 15 16 18 19 21)
@@ -66,7 +98,12 @@ do
 
     if [[ ${tot_vn} != "0" ]]
     then
-        pn_rate=$(echo "("${tot_n}"*"${tot_vp}")/("${tot_vn}"*"${tot_p}")" | bc -l)
+        if [[ ${ESTIMATE} == "true" ]]
+        then
+            pn_rate=$(echo "("${tot_n}"*"${tot_vp}")/("${tot_vn}"*"${tot_p}")" | bc -l)
+        else
+            pn_rate="1"
+        fi
         tn=$(echo ${tn}"*"${pn_rate} | bc -l)
         fn=$(echo ${fn}"*"${pn_rate} | bc -l)
 

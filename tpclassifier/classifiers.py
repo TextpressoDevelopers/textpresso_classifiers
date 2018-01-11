@@ -1,12 +1,13 @@
 """Train and apply document classifiers for Textpresso literature"""
 
 import os
+import pickle
 import random
 from sklearn import metrics, feature_selection
 from namedlist import namedlist
 from tpclassifier.fileutils import *
 from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer, TfidfTransformer, CountVectorizer
-from typing import Tuple
+from typing import Tuple, List
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
@@ -22,7 +23,6 @@ TestResults_ = namedlist("TestResults", "precision, recall, accuracy, roc")
 class TokenizerType(Enum):
     BOW = 1
     TFIDF = 2
-    HASH = 3
 
 
 class DatasetStruct(DatasetStruct_):
@@ -57,6 +57,7 @@ class TextpressoDocumentClassifier:
         self.classifier = None
         self.vectorizer = None
         self.feature_selector = None
+        self.vocabulary = None
         self.top_n_feat = 0
 
     def add_classified_docs_to_dataset(self, dir_path: str = None, recursive: bool = True,
@@ -96,11 +97,23 @@ class TextpressoDocumentClassifier:
                                                     file_type=file_type, category=category)
 
     def generate_training_and_test_sets(self, percentage_training: float = 0.8):
-        """split the dataset into training and test sets
+        """split the dataset into training and test sets, storing the results in separate *training_set* and *test_set*
+            fields and clearing the original *dataset* variable. If training and test sets have already been populated,
+            the method automatically re-construct the dataset by merging the two sets before re-splitting it into the
+            new training and test sets.
 
         :param percentage_training: the percentage of observations to be placed in the training set
         :type percentage_training: float
         """
+        if len(self.training_set.data) + len(self.test_set.data) > 0 and (self.dataset is None or
+                                                                                  len(self.dataset.data) == 0):
+            self.dataset = DatasetStruct(data=[], filenames=[], target=[], tr_features=None)
+            self.dataset.data = self.training_set.data
+            self.dataset.data.extend(self.test_set.data)
+            self.dataset.filenames = self.training_set.filenames
+            self.dataset.filenames.extend(self.test_set.filenames)
+            self.dataset.target = self.training_set.target
+            self.dataset.target.extend(self.test_set.target)
         if len(self.dataset.data) > 0:
             idx_rand_order = list(range(len(self.dataset.data)))
             random.shuffle(idx_rand_order)
@@ -112,12 +125,15 @@ class TextpressoDocumentClassifier:
             self.test_set.data = [self.dataset.data[i] for i in test_set_idx]
             self.test_set.filenames = [self.dataset.filenames[i] for i in test_set_idx]
             self.test_set.target = [self.dataset.target[i] for i in test_set_idx]
+            self.dataset = None
 
     def extract_features(self, tokenizer_type: TokenizerType = TokenizerType.BOW, ngram_range: Tuple[int, int] = (1, 1),
                          lemmatization: bool = False, top_n_feat: int = None, stop_words = "english",
-                         max_df: float = 1.0, max_features: int = None):
-        """perform feature extraction with tfidf normalization on training and test sets and store the transformed
-        features
+                         max_df: float = 1.0, max_features: int = None, fit_vocabulary: bool = True,
+                         transform_features: bool = True):
+        """perform feature extraction on training and test sets and store the transformed features. By default, the
+        method uses the vocabulary stored in the *vocabulary* field. If the vocabulary is None, a new vocabulary is
+        built from the corpus.
 
         :param tokenizer_type: the type of tokenizer to use for feature extraction
         :type tokenizer_type: TokenizerType
@@ -133,47 +149,50 @@ class TextpressoDocumentClassifier:
         :type max_df: float
         :param max_features: consider only the best n features sorted by tfidf
         :type max_features: int
+        :param fit_vocabulary: whether to fit the vocabulary of the vectorizer
+        :type fit_vocabulary: bool
+        :param transform_features: whether to transform the text in the documents into feature vectors
+        :type transform_features: bool
         """
-        if tokenizer_type == TokenizerType.BOW:
-            if lemmatization:
-                self.vectorizer = CountVectorizer(stop_words=stop_words, ngram_range=ngram_range,
-                                                  tokenizer=LemmaTokenizer(), max_df=max_df, max_features=max_features)
+        if len(self.training_set.data) > 0:
+            if tokenizer_type == TokenizerType.BOW:
+                if lemmatization:
+                    self.vectorizer = CountVectorizer(stop_words=stop_words, ngram_range=ngram_range,
+                                                      tokenizer=LemmaTokenizer(), max_df=max_df, max_features=max_features,
+                                                      vocabulary=self.vocabulary)
+                else:
+                    self.vectorizer = CountVectorizer(stop_words=stop_words, ngram_range=ngram_range, max_df=max_df,
+                                                      max_features=max_features, vocabulary=self.vocabulary)
+            elif tokenizer_type == TokenizerType.TFIDF:
+                if lemmatization:
+                    self.vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=ngram_range,
+                                                      tokenizer=LemmaTokenizer(), max_df=max_df, max_features=max_features,
+                                                      vocabulary=self.vocabulary)
+                else:
+                    self.vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=ngram_range, max_df=max_df,
+                                                      max_features=max_features, vocabulary=self.vocabulary)
+            if fit_vocabulary:
+                self.training_set.tr_features = self.vectorizer.fit(self.training_set.data)
+            if transform_features:
+                self.training_set.tr_features = self.vectorizer.transform(self.training_set.data)
+                if len(self.test_set.data) > 0:
+                    self.test_set.tr_features = self.vectorizer.transform(self.test_set.data)
+            if top_n_feat is not None and transform_features:
+                fs = feature_selection.chi2(self.training_set.tr_features, self.training_set.target)
+                best_features_idx = sorted(range(len(fs[0])), key=lambda k: fs[0][k], reverse=True)[:top_n_feat]
+                self.training_set.tr_features = self.training_set.tr_features[:, best_features_idx]
+                if len(self.test_set.data) > 0:
+                    self.test_set.tr_features = self.test_set.tr_features[:, best_features_idx]
+                self.feature_selector = fs
+                self.top_n_feat = top_n_feat
+                inv_vocabulary = {v: k for k, v in self.vectorizer.vocabulary_.items()}
+                # store best features in vocabulary
+                self.vocabulary = dict([(inv_vocabulary[best_idx], new_idx) for best_idx, new_idx in
+                                        zip(best_features_idx, range(top_n_feat))])
             else:
-                self.vectorizer = CountVectorizer(stop_words=stop_words, ngram_range=ngram_range, max_df=max_df,
-                                                  max_features=max_features)
-            self.training_set.tr_features = self.vectorizer.fit_transform(self.training_set.data)
-            if len(self.test_set.data) > 0:
-                self.test_set.tr_features = self.vectorizer.transform(self.test_set.data)
-        elif tokenizer_type == TokenizerType.HASH:
-            if lemmatization:
-                self.vectorizer = HashingVectorizer(stop_words=stop_words, ngram_range=ngram_range,
-                                                    tokenizer=LemmaTokenizer())
-            else:
-                self.vectorizer = HashingVectorizer(stop_words=stop_words, ngram_range=ngram_range)
-            tfidf_transformer = TfidfTransformer()
-            train_counts = self.vectorizer.transform(self.training_set.data)
-            self.training_set.tr_features = tfidf_transformer.fit_transform(train_counts)
-            if len(self.test_set.data) > 0:
-                test_counts = self.vectorizer.transform(self.test_set.data)
-                self.test_set.tr_features = tfidf_transformer.transform(test_counts)
-        elif tokenizer_type == TokenizerType.TFIDF:
-            if lemmatization:
-                self.vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=ngram_range,
-                                                  tokenizer=LemmaTokenizer(), max_df=max_df, max_features=max_features)
-            else:
-                self.vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=ngram_range, max_df=max_df,
-                                                  max_features=max_features)
-            self.training_set.tr_features = self.vectorizer.fit_transform(self.training_set.data)
-            if len(self.test_set.data) > 0:
-                self.test_set.tr_features = self.vectorizer.transform(self.test_set.data)
-        if top_n_feat is not None:
-            fs = feature_selection.chi2(self.training_set.tr_features, self.training_set.target)
-            best_features_idx = sorted(range(len(fs[0])), key=lambda k: fs[0][k], reverse=True)
-            self.training_set.tr_features = self.training_set.tr_features[:, best_features_idx[:top_n_feat]]
-            if len(self.test_set.data) > 0:
-                self.test_set.tr_features = self.test_set.tr_features[:, best_features_idx[:top_n_feat]]
-            self.feature_selector = fs
-            self.top_n_feat = top_n_feat
+                self.vocabulary = self.vectorizer.vocabulary_
+        else:
+            raise Exception('training set is empty')
 
     def train_classifier(self, model, dense: bool = False):
         """train a classifier using the sample documents in the training set and save the trained model
@@ -181,12 +200,16 @@ class TextpressoDocumentClassifier:
         :param model: the model to train
         :param dense: whether to transform the sparse matrix of features to a dense structure (required by some models)
         :type dense: bool
+        :raise: Exception in case the training set features have not been extracted yet
         """
-        self.classifier = model
-        if dense:
-            self.classifier.fit(self.training_set.tr_features.todense(), self.training_set.target)
+        if self.training_set.tr_features is not None:
+            self.classifier = model
+            if dense:
+                self.classifier.fit(self.training_set.tr_features.todense(), self.training_set.target)
+            else:
+                self.classifier.fit(self.training_set.tr_features, self.training_set.target)
         else:
-            self.classifier.fit(self.training_set.tr_features, self.training_set.target)
+            raise Exception('training set features have not been extracted yet')
 
     def test_classifier(self, test_on_training: bool = False, dense: bool = False):
         """test the classifier on the test set and return the results
@@ -201,15 +224,18 @@ class TextpressoDocumentClassifier:
             test_set = self.training_set
         else:
             test_set = self.test_set
-        if dense:
-            pred = self.classifier.predict(test_set.tr_features.todense())
+        if test_set.tr_features is not None:
+            if dense:
+                pred = self.classifier.predict(test_set.tr_features.todense())
+            else:
+                pred = self.classifier.predict(test_set.tr_features)
+            precision = metrics.precision_score(test_set.target, pred)
+            recall = metrics.recall_score(test_set.target, pred)
+            accuracy = metrics.accuracy_score(test_set.target, pred)
+            roc = metrics.roc_curve(test_set.target, pred)
+            return TestResults(precision, recall, accuracy, roc)
         else:
-            pred = self.classifier.predict(test_set.tr_features)
-        precision = metrics.precision_score(test_set.target, pred)
-        recall = metrics.recall_score(test_set.target, pred)
-        accuracy = metrics.accuracy_score(test_set.target, pred)
-        roc = metrics.roc_curve(test_set.target, pred)
-        return TestResults(precision, recall, accuracy, roc)
+            raise Exception('features have not been extracted yet')
 
     def predict_file(self, file_path: str, file_type: str = "pdf", dense: bool = False):
         """predict the class of a single file
@@ -245,7 +271,7 @@ class TextpressoDocumentClassifier:
     def predict_files(self, dir_path: str, file_type: str = "pdf", dense: bool = False):
         """predict the class of a set of files in a directory
 
-        :param dir_path: the path to the directory containg the files to be classified
+        :param dir_path: the path to the directory containing the files to be classified
         :type dir_path: str
         :param file_type: the type of files
         :type file_type: str
@@ -280,3 +306,80 @@ class TextpressoDocumentClassifier:
             return filenames, self.classifier.predict(tr_features.todense())
         else:
             return filenames, self.classifier.predict(tr_features)
+
+    def get_features_with_importance(self):
+        """retrieve the list of features of the classifier together with their chi-squared score. The score is set to 0
+        in case the importance of the features has not been calculated
+
+        :return: the list of features of the classifier with their importance score
+        :rtype: List[Tuple[str, float]]"""
+        inv_vocabulary = {v: k for k, v in self.vectorizer.vocabulary_.items()}
+        if self.feature_selector is not None:
+            best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
+                                       reverse=True)[:self.top_n_feat]
+            best_features_score = self.feature_selector[0][:self.top_n_feat]
+            return sorted([(inv_vocabulary[idx], score) for idx, score in zip(best_features_idx, best_features_score)],
+                          key=lambda x: x[1], reverse=True)
+        else:
+            return [(v, 0) for v in self.vectorizer.vocabulary_.keys()]
+
+    def save_to_file(self, file_path: str, compact: bool = True):
+        """save the classifier to file
+
+        :param file_path: path to the location where to store the classifier
+        :type file_path: str
+        :param compact: whether to save the classifier in compact mode. If True, the raw data used to train the
+            classifier is deleted and the classifier cannot be further modified by adding or removing features and
+            cannot be re-trained.
+        :type compact: bool
+        """
+        if compact:
+            self.dataset = None
+            self.training_set.data = []
+            self.training_set.tr_features = []
+            self.test_set.data = []
+            self.test_set.tr_features = []
+            self.vectorizer = None
+            self.feature_selector = None
+        pickle.dump(self.classifier, open(file_path, "wb"))
+
+    @staticmethod
+    def load_from_file(file_path: str):
+        """load a classifier from file
+
+        :param file_path: the path to the pickle file containing the classifier
+        :type file_path: str
+        :return: the classifier object
+        :rtype: TextpressoDocumentClassifier
+        """
+        return pickle.load(open(file_path, "rb"))
+
+    def remove_features(self, features: List[str]):
+        """remove a list of features from the current vocabulary of the classifier, if not empty. The classifier must
+        be re-trained to apply the new vocabulary.
+
+        :param features: the list of features to be removed
+        :type features: List[str]
+        """
+        if self.vocabulary is not None:
+            for feature in features:
+                self.vocabulary.pop(feature, None)
+            curr_features_list = self.vocabulary.keys()
+            self.vocabulary = dict([(feature, feat_id) for feature, feat_id in
+                                    zip(curr_features_list, range(len(curr_features_list)))])
+
+    def add_features(self, features: List[str], delete_old_vocabulary: bool = False):
+        """add a list of features to the current vocabulary. The classifier must be re-trained to apply the new
+        vocabulary
+
+        :param features: the list of features to be added to the current vocabulary
+        :type features: List[str]
+        :param delete_old_vocabulary: whether to delete the old vocabulary before adding the new features
+        :type delete_old_vocabulary: bool
+        """
+        curr_features_list = []
+        if self.vocabulary is not None and not delete_old_vocabulary:
+            curr_features_list = self.vocabulary.keys()
+        curr_features_list.extend(features)
+        self.vocabulary = dict([(feature, feat_id) for feature, feat_id in
+                                zip(curr_features_list, range(len(curr_features_list)))])

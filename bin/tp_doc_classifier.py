@@ -45,8 +45,8 @@ def main():
                         choices=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
                                  "XGBOOST"], help="type of model to use")
     parser.add_argument("-z", "--tokenizer-type", dest="tokenizer_type", metavar="tokenizer_type", type=str,
-                        default="TFIDF", choices=["BOW", "TFIDF", "HASH"], help="type of tokenizer to use for "
-                                                                              "feature extraction")
+                        default="TFIDF", choices=["BOW", "TFIDF"], help="type of tokenizer to use for feature "
+                                                                        "extraction")
     parser.add_argument("-n", "--ngram-size", metavar="ngram_size", dest="ngram_size", type=int, default=1,
                         help="number of consecutive words to be considered as a single feature")
     parser.add_argument("-b", "--best-features-num", metavar="best_features_size", dest="best_features_size", type=int,
@@ -55,14 +55,18 @@ def main():
     parser.add_argument("-l", "--lemmatize-words", dest="lemmatize", action="store_true", default=False,
                         help="apply lemmatization to text before the analysis "
                              "(https://en.wikipedia.org/wiki/Lemmatisation)")
+    parser.add_argument("-e", "--exclude-words", metavar="exclude_words", dest="exclude_words", type=str, default=None,
+                        help="exclude words contained in the provided file (separated by newline) from the vocabulary "
+                             "used for feature extraction")
+    parser.add_argument("-i", "--include-words", metavar="include_words", dest="include_words", type=str, default=None,
+                        help="include words contained in the provided file (separated by newline) from the vocabulary "
+                             "used for feature extraction")
 
     args = parser.parse_args()
 
     tokenizer = TokenizerType.TFIDF
     if args.tokenizer_type == "BOW":
         tokenizer = TokenizerType.BOW
-    elif args.tokenizer_type == "HASH":
-        tokenizer = TokenizerType.HASH
 
     models = {"KNN": (False, KNeighborsClassifier(3)), "SVM_LINEAR": (False, SVC(kernel="linear")),
               "SVM_NONLINEAR": (False, SVC()), "TREE": (False, DecisionTreeClassifier()),
@@ -71,6 +75,7 @@ def main():
               "GAUSS": (True, GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True)),
               "LDA": (True, QuadraticDiscriminantAnalysis()), "XGBOOST": (True, GradientBoostingClassifier())}
 
+    classifier = None
     if args.training_dir is not None:
         classifier = TextpressoDocumentClassifier()
         classifier.add_classified_docs_to_dataset(dir_path=os.path.join(args.training_dir, "positive"), recursive=True,
@@ -84,18 +89,24 @@ def main():
         classifier.extract_features(tokenizer_type=tokenizer, ngram_range=(1, args.ngram_size),
                                     lemmatization=args.lemmatize, stop_words="english",
                                     top_n_feat=args.best_features_size)
+        if args.include_words is not None:
+            words = [word.strip() for word in open(args.include_words)]
+            classifier.add_features(words)
+        if args.exclude_words is not None:
+            words = [word.strip() for word in open(args.exclude_words)]
+            classifier.add_features(words)
+        classifier.extract_features(tokenizer_type=tokenizer, ngram_range=(1, args.ngram_size),
+                                    lemmatization=args.lemmatize, stop_words="english",
+                                    top_n_feat=args.best_features_size)
         classifier.train_classifier(model=models[args.model][1], dense=models[args.model][0])
         if args.test:
             test_res = classifier.test_classifier(dense=models[args.model][0])
             print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
-
-        classifier.dataset.data = []
-        classifier.training_set.data = []
-        classifier.test_set.data = []
-        pickle.dump(classifier, open(args.config_file, "wb"))
+        classifier.save_to_file(args.config_file)
 
     if args.prediction_dir is not None:
-        classifier = pickle.load(open(args.config_file, "rb"))
+        if classifier is None:
+            classifier = TextpressoDocumentClassifier.load_from_file(args.config_file)
         results = classifier.predict_files(dir_path=args.prediction_dir, file_type=args.file_type,
                                            dense=models[args.model][0])
         for i in range(len(results[0])):
