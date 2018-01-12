@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/valearna/egonetworks.svg?branch=master)](https://travis-ci.org/valearna/egonetworks) 
+[![Build Status](https://travis-ci.org/valearna/tpclassifier.svg?branch=master)](https://travis-ci.org/valearna/egonetworks)
 
 ## Introduction
 
