@@ -33,12 +33,14 @@ def main():
                              "one named 'positive' containing positive observations and one named 'negative' for "
                              "negative ones")
     parser.add_argument("-T", "--test", dest="test", action="store_true", default=False,
-                        help="test the classifier on a test set, which is built as 20 percent of observations randomly "
-                             "selected (and removed before training) from the training set")
+                        help="test the classifier on a test set, which is built by taking 20 percent of observations "
+                             "randomly selected from the training set. Note that this reduces the size of the training "
+                             "set")
     parser.add_argument("-p", "--predict", metavar="prediction_dir", dest="prediction_dir", type=str, default=None,
                         help="classify papers in the specified directory")
-    parser.add_argument("-c", "--config", metavar="config_file", dest="config_file", type=str, default=".config",
-                        help="config file where to store the model or from which to read a previously trained one")
+    parser.add_argument("-c", "--config", metavar="config_file", dest="config_file", type=str, default="classifier.pkl",
+                        help="path to file where to save the classifier (in case the train option -t is activated) or "
+                             "from which to load a previously saved one")
     parser.add_argument("-f", "--file-type", metavar="file_type", dest="file_type", type=str, default="pdf",
                         choices=["pdf", "cas_pdf", "cas_xml"], help="type of files to be processed")
     parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM",
@@ -63,9 +65,8 @@ def main():
                              "used for feature extraction")
     parser.add_argument("-v", "--save-vocabulary-to-file", metavar="vocabulary_file", dest="vocabulary_file", type=str,
                         default=None, help="save the vocabulary of the classifier (the set of textual features along "
-                                           "with the feature relevance - their chi-squared values) to the specified "
-                                           "file. Each line will contain the text of the feature and the score "
-                                           "separated by tab")
+                                           "with the feature scores) to the specified file path. Each line will contain"
+                                           " the text of the feature and the score separated by tab")
 
     args = parser.parse_args()
 
