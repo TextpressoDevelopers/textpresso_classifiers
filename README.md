@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/valearna/tpclassifier.svg?branch=master)](https://travis-ci.org/valearna/egonetworks)
+[![Build Status](https://travis-ci.org/valearna/tpclassifier.svg?branch=master)](https://travis-ci.org/valearna/egonetworks) [![Coverage Status](https://coveralls.io/repos/github/valearna/tpclassifer/badge.svg?branch=master)](https://coveralls.io/github/valearna/tpclassifer?branch=master)
 
 ## Introduction
 
