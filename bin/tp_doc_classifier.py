@@ -61,6 +61,11 @@ def main():
     parser.add_argument("-i", "--include-words", metavar="include_words", dest="include_words", type=str, default=None,
                         help="include words contained in the provided file (separated by newline) from the vocabulary "
                              "used for feature extraction")
+    parser.add_argument("-v", "--save-vocabulary-to-file", metavar="vocabulary_file", dest="vocabulary_file", type=str,
+                        default=None, help="save the vocabulary of the classifier (the set of textual features along "
+                                           "with the feature relevance - their chi-squared values) to the specified "
+                                           "file. Each line will contain the text of the feature and the score "
+                                           "separated by tab")
 
     args = parser.parse_args()
 
@@ -102,15 +107,24 @@ def main():
         if args.test:
             test_res = classifier.test_classifier(dense=models[args.model][0])
             print(test_res.precision, test_res.recall, test_res.accuracy, sep="\t")
-        classifier.save_to_file(args.config_file)
+        if args.config_file is not None:
+            classifier.save_to_file(args.config_file)
 
-    if args.prediction_dir is not None:
-        if classifier is None:
-            classifier = TextpressoDocumentClassifier.load_from_file(args.config_file)
-        results = classifier.predict_files(dir_path=args.prediction_dir, file_type=args.file_type,
-                                           dense=models[args.model][0])
-        for i in range(len(results[0])):
-            print(results[0][i], results[1][i], sep=" ")
+    if classifier is None and args.config_file is not None:
+        classifier = TextpressoDocumentClassifier.load_from_file(args.config_file)
+
+    if classifier is not None:
+        if args.prediction_dir is not None:
+            results = classifier.predict_files(dir_path=args.prediction_dir, file_type=args.file_type,
+                                               dense=models[args.model][0])
+            for i in range(len(results[0])):
+                print(results[0][i], results[1][i], sep="\t")
+
+        if args.vocabulary_file is not None:
+            feature_list = classifier.get_features_with_importance()
+            vocabulary_file = open(args.vocabulary_file, 'w')
+            for feature in feature_list:
+                vocabulary_file.write(feature[0] + "\t" + feature[1])
 
 
 if __name__ == '__main__':
