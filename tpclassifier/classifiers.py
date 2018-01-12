@@ -80,8 +80,9 @@ class TextpressoDocumentClassifier:
             if not os.path.isdir(os.path.join(dir_path, file)):
                 if file_type == "pdf":
                     data = extract_text_from_pdf(file_path=os.path.join(dir_path, file))
-                    if data is not None:
-                        self.dataset.data.append(data)
+                    if data is None:
+                        continue
+                    self.dataset.data.append(data)
                 elif file_type == "cas_pdf" or file_type == "cas_xml":
                     if file_type == "cas_pdf":
                         cas_type = CasType.PDF
@@ -105,8 +106,8 @@ class TextpressoDocumentClassifier:
         :param percentage_training: the percentage of observations to be placed in the training set
         :type percentage_training: float
         """
-        if len(self.training_set.data) + len(self.test_set.data) > 0 and (self.dataset is None or
-                                                                                  len(self.dataset.data) == 0):
+        if len(self.training_set.data) + len(self.test_set.data) > 0 and (self.dataset is None
+                                                                          or len(self.dataset.data) == 0):
             self.dataset = DatasetStruct(data=[], filenames=[], target=[], tr_features=None)
             self.dataset.data = self.training_set.data
             self.dataset.data.extend(self.test_set.data)

@@ -2,7 +2,7 @@
 
 import unittest
 import os
-from tpclassifier.classifiers import TextpressoDocumentClassifier, CasType
+from tpclassifier.classifiers import TextpressoDocumentClassifier, CasType, TokenizerType
 from sklearn import svm
 
 __author__ = "Valerio Arnaboldi"
@@ -22,25 +22,44 @@ class TestTextpressoDocumentClassifier(unittest.TestCase):
                                                             file_type="cas_pdf", category=1)
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "cas", "animals"),
                                                             file_type="cas_xml", category=2)
-        self.assertTrue(len(self.tpDocClassifier.dataset.data) == 10)
-        self.assertTrue(len(self.tpDocClassifier.dataset.target) == 10)
+        self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "pdf"),
+                                                            file_type="pdf", category=2, recursive=True)
+        self.assertTrue(len(self.tpDocClassifier.dataset.data) == 12)
+        self.assertTrue(len(self.tpDocClassifier.dataset.target) == 12)
 
     def test_generate_training_and_test_sets(self):
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "cas", "c_elegans"),
                                                             file_type="cas_pdf", category=1)
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "cas", "animals"),
                                                             file_type="cas_xml", category=2)
+        self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "pdf", "c_elegans"),
+                                                            file_type="pdf", category=1)
         self.tpDocClassifier.generate_training_and_test_sets(percentage_training=0.8)
-        self.assertEqual(len(self.tpDocClassifier.training_set.data),
-                         int(len(self.tpDocClassifier.test_set.data) * 4))
+        # call the function twice to re-generate dataset from previously split sets
+        self.tpDocClassifier.generate_training_and_test_sets(percentage_training=0.8)
+        self.assertGreater(len(self.tpDocClassifier.training_set.data), len(self.tpDocClassifier.test_set.data))
 
     def test_extract_features(self):
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "cas", "c_elegans"),
                                                             file_type="cas_pdf", category=1)
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "cas", "animals"),
                                                             file_type="cas_xml", category=2)
+        exception_caught = False
+        try:
+            self.tpDocClassifier.extract_features()
+        except Exception:
+            exception_caught = True
+        self.assertTrue(exception_caught)
         self.tpDocClassifier.generate_training_and_test_sets(percentage_training=0.8)
         self.tpDocClassifier.extract_features()
+        self.assertTrue(self.tpDocClassifier.dataset is None)
+        self.assertTrue(self.tpDocClassifier.test_set.tr_features is not None)
+        self.tpDocClassifier.extract_features(tokenizer_type=TokenizerType.TFIDF, ngram_range=(1, 1),
+                                              lemmatization=True, top_n_feat=50)
+        self.assertTrue(self.tpDocClassifier.dataset is None)
+        self.assertTrue(self.tpDocClassifier.test_set.tr_features is not None)
+        self.tpDocClassifier.extract_features(tokenizer_type=TokenizerType.BOW, ngram_range=(1, 1),
+                                              lemmatization=True, top_n_feat=50)
         self.assertTrue(self.tpDocClassifier.dataset is None)
         self.assertTrue(self.tpDocClassifier.test_set.tr_features is not None)
 
