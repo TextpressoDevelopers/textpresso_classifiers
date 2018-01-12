@@ -28,8 +28,9 @@ classifier = TextpressoDocumentClassifier()
 The complete documentation of the classes and functions provided by the library can be found
 [here](http://tpclassifier.readthedocs.io/en/latest/).
 
-## Use the executable scripts provided with the library
+## Use the executable scripts provided by the library
 
-tpclassifier comes with a set of executable programs that use the functions in the library to provide an easy interface
+tpclassifier comes with a set of executable programs that use the library as a backend to provide an easy interface
 to train, test, and apply classifiers for pdf or CAS documents. Go to the project
-[wiki](https://github.com/valearna/tpclassifer/wiki) for the complete documentation of the programs.
+[wiki](https://github.com/valearna/tpclassifer/wiki) to see the complete documentation of these programs and for some
+example use cases.
