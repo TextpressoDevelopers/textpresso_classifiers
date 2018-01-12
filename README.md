@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/valearna/egonetworks.svg?branch=master)](https://travis-ci.org/valearna/egonetworks) 
+
+## Introduction
+
 Tpclassifier is a Python library that contains functions to train and apply classifiers for textual documents. It is
 based on Python scikit-learn library, and it provides an easy interface to train and use classifiers. In addition,
 tpclassifier includes functions to transform documents from pdf and Textpresso CAS files (both generated from pdf or xml
