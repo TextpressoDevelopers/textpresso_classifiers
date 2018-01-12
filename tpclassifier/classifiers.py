@@ -246,7 +246,8 @@ class TextpressoDocumentClassifier:
         :type file_type: str
         :param dense: whether to transform the sparse matrix of features to a dense structure (required by some models)
         :type dense: bool
-        :return: the class predicted by the classifier
+        :return: the class predicted by the classifier or None if the class cannot be predicted (e.g., the input file
+            cannot be converted)
         :rtype: int
         """
         if file_type == "pdf":
@@ -258,15 +259,18 @@ class TextpressoDocumentClassifier:
                 cas_type = CasType.XML
             fulltext = extract_text_from_cas_content(read_compressed_cas_content(file_path=file_path),
                                                      cas_type=cas_type)
-        tr_features = self.vectorizer.transform([fulltext])
-        if self.feature_selector is not None:
-            best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
-                                       reverse=True)
-            tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
-        if dense:
-            return self.classifier.predict(self.vectorizer.transform(tr_features))
+        if fulltext is not None:
+            tr_features = self.vectorizer.transform([fulltext])
+            if self.feature_selector is not None:
+                best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
+                                           reverse=True)
+                tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
+            if dense:
+                return self.classifier.predict(self.vectorizer.transform(tr_features))
+            else:
+                return self.classifier.predict(self.vectorizer.transform(tr_features))
         else:
-            return self.classifier.predict(self.vectorizer.transform(tr_features))
+            return None
 
     def predict_files(self, dir_path: str, file_type: str = "pdf", dense: bool = False):
         """predict the class of a set of files in a directory
@@ -277,16 +281,19 @@ class TextpressoDocumentClassifier:
         :type file_type: str
         :param dense: whether to transform the sparse matrix of features to a dense structure (required by some models)
         :type dense: bool
-        :return: the file names of the classified documents along with the classes predicted by the classifier
+        :return: the file names of the classified documents along with the classes predicted by the classifier or None
+            if the class cannot be predicted (e.g., the input file cannot be converted)
         :rtype: Tuple[List[str], List[int]]
         """
         data = []
         filenames = []
+        failed_filenames = []
         for file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, file)
             if file_type == "pdf":
                 text = extract_text_from_pdf(file_path)
                 if text is None:
+                    failed_filenames.append(file)
                     continue
                 data.append(extract_text_from_pdf(file_path))
             else:
@@ -302,10 +309,13 @@ class TextpressoDocumentClassifier:
             best_features_idx = sorted(range(len(self.feature_selector[0])), key=lambda k: self.feature_selector[0][k],
                                        reverse=True)
             tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
+        filenames.extend(failed_filenames)
         if dense:
-            return filenames, self.classifier.predict(tr_features.todense())
+            predictions = self.classifier.predict(tr_features.todense()).tolist()
         else:
-            return filenames, self.classifier.predict(tr_features)
+            predictions = self.classifier.predict(tr_features).tolist()
+        predictions.extend([None] * len(failed_filenames))
+        return filenames, predictions
 
     def get_features_with_importance(self):
         """retrieve the list of features of the classifier together with their chi-squared score. The score is set to 0

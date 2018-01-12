@@ -16,7 +16,7 @@ pip3 install .
 
 The installation requires Python3 and pip3 to be installed in the system.
 
-## Use the library
+## Using the library from Python
 
 The library can be imported as a regular Python package:
 ```python
@@ -28,7 +28,7 @@ classifier = TextpressoDocumentClassifier()
 The complete documentation of the classes and functions provided by the library can be found
 [here](http://tpclassifier.readthedocs.io/en/latest/).
 
-## Use the executable scripts provided by the library
+## Using the executable scripts provided by the library
 
 tpclassifier comes with a set of executable programs that use the library as a backend to provide an easy interface
 to train, test, and apply classifiers for pdf or CAS documents. Go to the project

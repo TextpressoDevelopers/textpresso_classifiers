@@ -3,3 +3,5 @@ tpclassifier.egg-info
 *.pyc
 .idea/*
 docs/_build/*
+.coverage
+.coveragerc

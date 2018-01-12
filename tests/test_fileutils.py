@@ -19,18 +19,25 @@ class TestCasUtils(unittest.TestCase):
 
     def test_read_compressed_cas_content(self):
         self.assertGreater(len(read_compressed_cas_content(
-            os.path.join(self.training_dir_path, "animals", "animals-03-00606.tpcas.gz"))), 0)
+            os.path.join(self.training_dir_path, "cas", "animals", "animals-03-00606.tpcas.gz"))), 0)
 
     def test_extract_text_from_cas_content(self):
-        cas_content = read_compressed_cas_content(os.path.join(self.training_dir_path, "c_elegans",
+        cas_content = read_compressed_cas_content(os.path.join(self.training_dir_path, "cas", "c_elegans",
                                                                "WBPaper00035071.tpcas.gz"))
         fulltext = extract_text_from_cas_content(cas_content=cas_content, cas_type=CasType.PDF)
         self.assertTrue(len(fulltext) > 0)
-        cas_content = read_compressed_cas_content(os.path.join(self.training_dir_path, "animals",
+        cas_content = read_compressed_cas_content(os.path.join(self.training_dir_path, "cas", "animals",
                                                                "animals-03-00606.tpcas.gz"))
         fulltext = extract_text_from_cas_content(cas_content=cas_content, cas_type=CasType.XML)
         self.assertTrue(len(fulltext) > 0)
 
+    def test_extract_text_from_pdf(self):
+        fulltext = extract_text_from_pdf(os.path.join(self.training_dir_path, "pdf", "c_elegans",
+                                                      "WBPaper00000003.pdf"))
+        self.assertTrue(len(fulltext) > 0)
+        fulltext = extract_text_from_pdf(os.path.join(self.training_dir_path, "pdf", "c_elegans",
+                                                      "WBPaper00000008.pdf"))
+        self.assertTrue(len(fulltext) > 0)
 
 if __name__ == "__main__":
     unittest.main()
