@@ -21,9 +21,6 @@ do
 key=$1
 
 case $key in
-    -h|--help)
-    usage
-    ;;
     -e|--estimate-true-recall)
     ESTIMATE="true"
     shift
@@ -43,7 +40,7 @@ case $key in
 esac
 done
 
-if [[ ${stored_predictions_root_dir} ]]
+if [[ ${stored_predictions_root_dir} == "" ]]
 then
     usage
 fi
