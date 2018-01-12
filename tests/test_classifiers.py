@@ -32,7 +32,7 @@ class TestTextpressoDocumentClassifier(unittest.TestCase):
                                                             file_type="cas_xml", category=2)
         self.tpDocClassifier.generate_training_and_test_sets(percentage_training=0.8)
         self.assertEqual(len(self.tpDocClassifier.training_set.data),
-                         int(len(self.tpDocClassifier.dataset.data) * 0.8))
+                         int(len(self.tpDocClassifier.test_set.data) * 4))
 
     def test_extract_features(self):
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "c_elegans"),
@@ -41,7 +41,7 @@ class TestTextpressoDocumentClassifier(unittest.TestCase):
                                                             file_type="cas_xml", category=2)
         self.tpDocClassifier.generate_training_and_test_sets(percentage_training=0.8)
         self.tpDocClassifier.extract_features()
-        self.assertTrue(self.tpDocClassifier.dataset.tr_features is not None)
+        self.assertTrue(self.tpDocClassifier.dataset is None)
         self.assertTrue(self.tpDocClassifier.test_set.tr_features is not None)
 
     def test_train_classifier(self):
