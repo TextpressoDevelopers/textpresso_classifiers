@@ -56,7 +56,7 @@ models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "L
 tmpfile=$(mktemp)
 wget -o /dev/null --post-data="select_curator=two736&action=Curation+Statistics+Page&checkbox_all_datatypes=all&checkbox_all_flagging_methods=all" "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi" -O ${tmpfile}
 
-echo -e "DATATYPE\tMODEL\tTP\tFP\tTN\tFN\tPRECISION\tRECALL\tF_MEASURE"
+echo -e "DATATYPE\tMODEL\tTP\tFP\tTN\tFN\tPRECISION\tRECALL\tF_MEASURE\tACCURACY"
 
 for ((i=0; i<$((${#datatypes[@]})); i++))
 do
@@ -121,9 +121,12 @@ do
 
             fmeasure=0
             if [[ $(echo ${precision}"+"${recall}">0" | bc -l) != "0" ]]; then fmeasure=$(echo "2*("${precision}"*"${recall}")/("${precision}"+"${recall}")" | bc -l); fi
-            echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${tp}"\t"${fp}"\t"${tn}"\t"${fn}"\t"${precision}"\t"${recall}"\t"${fmeasure}
+
+            accuracy=0
+            if [[ $(echo ${tp}"+"${tn}"+"${fp}"+"${fn}">0" | bc -l) != "0" ]]; then accuracy=$(echo "("${tp}"+"${tn}")/("${tp}"+"${tn}"+"${fp}"+"${fn}")" | bc -l); fi
+            echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${tp}"\t"${fp}"\t"${tn}"\t"${fn}"\t"${precision}"\t"${recall}"\t"${fmeasure}"\t"${accuracy}
         else
-            echo -e ${datatypes[$i]}"\t"${models[$j]}"\t"${tp}"\t"${fp}"\t"${tn}"\t"${fn}"\tNA\tNA\tNA"
+            echo -e ${datatypes[$i]}"\t"${models[$j]}"\tNA\tNA\tNA\t\tNA\tNA\tNA\tNA"
         fi
     done
 done
