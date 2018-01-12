@@ -9,7 +9,7 @@ install:
   - pip install nose
   - pip install coverage
   - pip install coveralls
-  - python3 -c "import nltk; nltk.download('punkt')"
+  - python3 -c "import nltk; nltk.download('punkt'); nltk.download('wordnet')"
 # command to run tests
 script:
   - nosetests
