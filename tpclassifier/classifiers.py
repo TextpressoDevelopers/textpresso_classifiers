@@ -17,7 +17,7 @@ __version__ = "1.0.1"
 
 
 DatasetStruct_ = namedlist("DatasetStruct", "data, filenames, target, tr_features")
-TestResults_ = namedlist("TestResults", "precision, recall, accuracy, roc")
+TestResults_ = namedlist("TestResults", "precision, recall, accuracy")
 
 
 class TokenizerType(Enum):
@@ -192,6 +192,7 @@ class TextpressoDocumentClassifier:
                                         zip(best_features_idx, range(top_n_feat))])
             else:
                 self.vocabulary = self.vectorizer.vocabulary_
+                self.feature_selector = None
         else:
             raise Exception('training set is empty')
 
@@ -233,8 +234,7 @@ class TextpressoDocumentClassifier:
             precision = metrics.precision_score(test_set.target, pred)
             recall = metrics.recall_score(test_set.target, pred)
             accuracy = metrics.accuracy_score(test_set.target, pred)
-            roc = metrics.roc_curve(test_set.target, pred)
-            return TestResults(precision, recall, accuracy, roc)
+            return TestResults(precision, recall, accuracy)
         else:
             raise Exception('features have not been extracted yet')
 
@@ -267,9 +267,9 @@ class TextpressoDocumentClassifier:
                                            reverse=True)
                 tr_features = tr_features[:, best_features_idx[:self.top_n_feat]]
             if dense:
-                return self.classifier.predict(self.vectorizer.transform(tr_features))
+                return self.classifier.predict(tr_features.todense())
             else:
-                return self.classifier.predict(self.vectorizer.transform(tr_features))
+                return self.classifier.predict(tr_features)
         else:
             return None
 
@@ -388,9 +388,9 @@ class TextpressoDocumentClassifier:
         :param delete_old_vocabulary: whether to delete the old vocabulary before adding the new features
         :type delete_old_vocabulary: bool
         """
-        curr_features_list = []
+        curr_features_set = set()
         if self.vocabulary is not None and not delete_old_vocabulary:
-            curr_features_list = self.vocabulary.keys()
-        curr_features_list.extend(features)
+            curr_features_set = set(self.vocabulary.keys())
+        curr_features_set.update(features)
         self.vocabulary = dict([(feature, feat_id) for feature, feat_id in
-                                zip(curr_features_list, range(len(curr_features_list)))])
+                                zip(curr_features_set, range(len(curr_features_set)))])
