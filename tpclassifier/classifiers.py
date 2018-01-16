@@ -352,7 +352,7 @@ class TextpressoDocumentClassifier:
             self.test_set.tr_features = []
             self.vectorizer = None
             self.feature_selector = None
-        pickle.dump(self.classifier, open(file_path, "wb"))
+        pickle.dump(self, open(file_path, "wb"))
 
     @staticmethod
     def load_from_file(file_path: str):

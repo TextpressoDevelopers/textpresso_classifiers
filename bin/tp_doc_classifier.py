@@ -75,7 +75,7 @@ def main():
         tokenizer = TokenizerType.BOW
 
     models = {"KNN": (False, KNeighborsClassifier(3)), "SVM_LINEAR": (False, SVC(kernel="linear")),
-              "SVM_NONLINEAR": (False, SVC()), "TREE": (False, DecisionTreeClassifier()),
+              "SVM_NONLINEAR": (False, SVC(gamma=0.1)), "TREE": (False, DecisionTreeClassifier()),
               "RF": (False, RandomForestClassifier()), "MLP": (False, MLPClassifier(alpha=1)),
               "NAIVEB": (True, GaussianNB()),
               "GAUSS": (True, GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True)),

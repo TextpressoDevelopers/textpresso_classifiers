@@ -152,7 +152,7 @@ class TestTextpressoDocumentClassifier(unittest.TestCase):
         self.assertIsNotNone(prediction)
 
     def test_prediction_multiple_files(self):
-        model = svm.SVC()
+        model = svm.SVC(gamma=0.1)
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "cas", "c_elegans"),
                                                             file_type="cas_pdf", category=1)
         self.tpDocClassifier.add_classified_docs_to_dataset(os.path.join(self.training_dir_path, "cas", "animals"),
