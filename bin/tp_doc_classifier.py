@@ -42,8 +42,8 @@ def main():
                         help="path to file where to save the classifier (in case the train option -t is activated) or "
                              "from which to load a previously saved one")
     parser.add_argument("-f", "--file-type", metavar="file_type", dest="file_type", type=str, default="pdf",
-                        choices=["pdf", "cas_pdf", "cas_xml"], help="type of files to be processed")
-    parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM",
+                        choices=["pdf", "cas_pdf", "cas_xml", "txt"], help="type of files to be processed")
+    parser.add_argument("-m", "--model", metavar="model", dest="model", type=str, default="SVM_LINEAR",
                         choices=["KNN", "SVM_LINEAR", "SVM_NONLINEAR", "TREE", "RF", "MLP", "NAIVEB", "GAUSS", "LDA",
                                  "XGBOOST"], help="type of model to use")
     parser.add_argument("-z", "--tokenizer-type", dest="tokenizer_type", metavar="tokenizer_type", type=str,

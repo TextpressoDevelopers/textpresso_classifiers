@@ -91,6 +91,9 @@ class TextpressoDocumentClassifier:
                     self.dataset.data.append(extract_text_from_cas_content(
                         cas_content=read_compressed_cas_content(file_path=os.path.join(dir_path, file)),
                         cas_type=cas_type))
+                elif file_type == "txt":
+                    with open(os.path.join(dir_path, file)) as input_file:
+                        self.dataset.data.append(input_file.read())
                 self.dataset.filenames.append(file)
                 self.dataset.target.append(category)
             elif recursive:
@@ -350,7 +353,6 @@ class TextpressoDocumentClassifier:
             self.training_set.tr_features = []
             self.test_set.data = []
             self.test_set.tr_features = []
-            self.vectorizer = None
             self.feature_selector = None
         pickle.dump(self, open(file_path, "wb"))
 
