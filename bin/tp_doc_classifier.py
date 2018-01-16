@@ -125,7 +125,7 @@ def main():
             feature_list = classifier.get_features_with_importance()
             vocabulary_file = open(args.vocabulary_file, 'w')
             for feature in feature_list:
-                vocabulary_file.write(feature[0] + "\t" + feature[1])
+                vocabulary_file.write(feature[0] + "\t" + str(feature[1]) + "\n")
 
 
 if __name__ == '__main__':

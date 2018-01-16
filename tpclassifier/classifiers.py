@@ -353,7 +353,6 @@ class TextpressoDocumentClassifier:
             self.training_set.tr_features = []
             self.test_set.data = []
             self.test_set.tr_features = []
-            self.feature_selector = None
         pickle.dump(self, open(file_path, "wb"))
 
     @staticmethod
