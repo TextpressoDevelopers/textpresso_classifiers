@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/valearna/tpclassifier.svg?branch=master)](https://travis-ci.org/valearna/tpclassifier) [![Coverage Status](https://coveralls.io/repos/github/valearna/tpclassifier/badge.svg?branch=master)](https://coveralls.io/github/valearna/tpclassifier?branch=master)
+[![Build Status](https://travis-ci.org/valearna/tpclassifier.svg?branch=master)](https://travis-ci.org/valearna/tpclassifier) [![Coverage Status](https://coveralls.io/repos/github/valearna/tpclassifier/badge.svg?branch=master)](https://coveralls.io/github/valearna/tpclassifier?branch=master&service=github)
 
 ## Introduction
 
