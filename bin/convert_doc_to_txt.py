@@ -12,8 +12,7 @@ __version__ = "1.0.1"
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train a binary classifier and use it to classify Textpresso documents"
-                                     " in pdf or CAS format")
+    parser = argparse.ArgumentParser(description="Convert documents from pdf or CAS format to plain text")
     parser.add_argument("-f", "--from", metavar="type_from", dest="type_from", type=str, default="pdf",
                         choices=["pdf", "cas_pdf", "cas_xml"], help="type of files to be processed")
     parser.add_argument('input_file', help='single document file to be converted')

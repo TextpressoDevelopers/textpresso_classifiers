@@ -11,7 +11,6 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process.kernels import RBF
-from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
@@ -75,7 +74,7 @@ def main():
         tokenizer = TokenizerType.BOW
 
     models = {"KNN": (False, KNeighborsClassifier(3)), "SVM_LINEAR": (False, SVC(kernel="linear")),
-              "SVM_NONLINEAR": (False, SVC(gamma=0.1)), "TREE": (False, DecisionTreeClassifier()),
+              "SVM_NONLINEAR": (False, SVC(gamma=0.05)), "TREE": (False, DecisionTreeClassifier()),
               "RF": (False, RandomForestClassifier()), "MLP": (False, MLPClassifier(alpha=1)),
               "NAIVEB": (True, GaussianNB()),
               "GAUSS": (True, GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True)),
