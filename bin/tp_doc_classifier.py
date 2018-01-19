@@ -15,7 +15,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import NuSVR
+from sklearn.svm import NuSVR, SVC
 from tpclassifier import TextpressoDocumentClassifier, CasType
 from tpclassifier.classifiers import TokenizerType
 
