@@ -15,7 +15,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
+from sklearn.svm import NuSVR
 from tpclassifier import TextpressoDocumentClassifier, CasType
 from tpclassifier.classifiers import TokenizerType
 
@@ -74,7 +74,7 @@ def main():
         tokenizer = TokenizerType.BOW
 
     models = {"KNN": (False, KNeighborsClassifier(3)), "SVM_LINEAR": (False, SVC(kernel="linear")),
-              "SVM_NONLINEAR": (False, SVC(gamma=0.05)), "TREE": (False, DecisionTreeClassifier()),
+              "SVM_NONLINEAR": (False, NuSVR(kernel='sigmoid', gamma=0.05)), "TREE": (False, DecisionTreeClassifier()),
               "RF": (False, RandomForestClassifier()), "MLP": (False, MLPClassifier(alpha=1)),
               "NAIVEB": (True, GaussianNB()),
               "GAUSS": (True, GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True)),
@@ -118,7 +118,11 @@ def main():
             results = classifier.predict_files(dir_path=args.prediction_dir, file_type=args.file_type,
                                                dense=models[args.model][0])
             for i in range(len(results[0])):
-                print(results[0][i], results[1][i], sep="\t")
+                if results[1][i] > 0.4:
+                    score = 1
+                else:
+                    score = 0
+                print(results[0][i], score, sep="\t")
 
         if args.vocabulary_file is not None:
             feature_list = classifier.get_features_with_importance()

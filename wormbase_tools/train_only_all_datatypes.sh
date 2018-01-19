@@ -28,16 +28,7 @@ case $key in
     ;;
     -t|--type)
     shift
-    if [[ $1 == "pdf" ]]
-    then
-        FILE_TYPE="pdf"
-    elif [[ $1 == "cas_pdf" ]]
-    then
-        FILE_TYPE="cas_pdf"
-    elif [[ $1 == "cas_xml" ]]
-    then
-        FILE_TYPE="cas_xml"
-    fi
+    FILE_TYPE="$1"
     shift
     ;;
     -n|--ngram-size)
