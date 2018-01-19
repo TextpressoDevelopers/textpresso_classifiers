@@ -256,13 +256,17 @@ class TextpressoDocumentClassifier:
         """
         if file_type == "pdf":
             fulltext = extract_text_from_pdf(file_path)
-        else:
+        elif file_type.startswith("cas_"):
             if file_type == "cas_pdf":
                 cas_type = CasType.PDF
             else:
                 cas_type = CasType.XML
             fulltext = extract_text_from_cas_content(read_compressed_cas_content(file_path=file_path),
                                                      cas_type=cas_type)
+        elif file_type == "txt":
+            fulltext = open(file_path, "r").read()
+        else:
+            raise Exception("file type not supported")
         if fulltext is not None:
             tr_features = self.vectorizer.transform([fulltext])
             if self.feature_selector is not None:
@@ -300,13 +304,17 @@ class TextpressoDocumentClassifier:
                     failed_filenames.append(file)
                     continue
                 data.append(extract_text_from_pdf(file_path))
-            else:
+            elif file_type.startswith("cas_"):
                 if file_type == "cas_pdf":
                     cas_type = CasType.PDF
                 else:
                     cas_type = CasType.XML
                 data.append(extract_text_from_cas_content(read_compressed_cas_content(file_path=file_path),
                             cas_type=cas_type))
+            elif file_type == "txt":
+                data.append(open(file_path, "r").read())
+            else:
+                raise Exception("file type not supported")
             filenames.append(file)
         tr_features = self.vectorizer.transform(data)
         if self.feature_selector is not None:
