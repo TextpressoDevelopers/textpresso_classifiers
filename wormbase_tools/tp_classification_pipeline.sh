@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
 
 function usage {
-    echo "usage: $(basename $0) [-t] <models_dir> <data_dir> <list_of_filenames_to_classify>"
-    echo "  -t --type                set the file type. Accepted values are pdf, cas_pdf or cas_xml"
+    echo "classify cas files into different data types. Models dir must contain a model for each data type, named "
+    echo "<datatype>.pkl (lowercase). The data dir must contain two sub-folders: 'PMCOA' and 'C. elegans', "
+    echo "each of which must contain sub-forlders with paper names, with cas files in them."
+    echo ""
+    echo "usage: $(basename $0)      <models_dir> <data_dir>"
     echo "  -h --help                display help"
     exit 1
 }
 
 MODELS_DIR=""
 DATA_DIR=""
-LIST_FILENAMES=""
-FILE_TYPE="pdf"
+FILE_TYPE=""
 
-
-models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
+datatypes=("antibody" "catalyticact" "expression_cluster" "geneint" "geneprod" "genereg" "newmutant" "otherexpr" \
+"overexpr" "rnai" "seqchange" "structcorr")
 
 while [[ $# -gt 0 ]]
 do
@@ -23,42 +25,17 @@ case $key in
     -h|--help)
     usage
     ;;
-    -t|--type)
-    shift
-    if [[ $1 == "pdf" ]]
-    then
-        FILE_TYPE="pdf"
-    elif [[ $1 == "cas_pdf" ]]
-    then
-        FILE_TYPE="cas_pdf"
-    elif [[ $1 == "cas_xml" ]]
-    then
-        FILE_TYPE="cas_xml"
-    fi
-    shift
-    ;;
-    -n|--ngram-size)
-    shift
-    NGRAM_SIZE="$1"
-    shift
-    ;;
-    -m|--max-features)
-    shift
-    MAX_FEATURES="$1"
-    shift
-    ;;
-    -z|--tokenization-scheme)
-    shift
-    TOKENIZATION="$1"
-    shift
-    ;;
-    -h|--help)
-    usage
-    ;;
     *)
     if [[ -d $key ]]
     then
-        INPUT_DIR="$key"
+        MODELS_DIR="$key"
+    else
+        usage
+    fi
+    shift
+    if [[ -d $key ]]
+    then
+        DATA_DIR="$key"
     else
         usage
     fi
@@ -67,7 +44,14 @@ case $key in
 esac
 done
 
-if [[ ${INPUT_DIR} == "" ]]
+if [[ ${MODELS_DIR} == "" || ${DATA_DIR} == "" ]]
 then
     usage
 fi
+
+#
+
+for datatype in $datatypes[@]
+do
+    tp_doc_classifier.py -c ${MODELS_DIR}/${datatype}.pkl -p /
+done

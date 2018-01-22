@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """Classify Textpresso documents into categories using a svm classifier"""
 
 import argparse

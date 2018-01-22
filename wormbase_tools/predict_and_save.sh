@@ -2,7 +2,7 @@
 
 function usage {
     echo "usage: $(basename $0) [-t] <model_dir> <data_dir>"
-    echo "  -t --type                set the file type. Accepted values are pdf or cas"
+    echo "  -t --type                set the file type. Accepted values are pdf, cas or txt"
     echo "  -h --help                display help"
     echo "  -w --wait-after-model    parallelize execution only for one model at a time"
     exit 1

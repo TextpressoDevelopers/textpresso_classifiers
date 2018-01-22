@@ -47,7 +47,7 @@ fi
 
 datatypes=("antibody" "catalyticact" "expression_cluster" "geneint" "geneprod" "genereg" "newmutant" "otherexpr" \
 "overexpr" "rnai" "seqchange" "structcorr")
-dtindices=(1 3 5 7 8 9 14 16 17 19 20 22)
+dtindices=(1 3 5 7 8 9 13 15 16 18 19 20)
 models=("KNN" "SVM_LINEAR" "SVM_NONLINEAR" "TREE" "RF" "MLP" "NAIVEB" "GAUSS" "LDA" "XGBOOST")
 
 tmpfile=$(mktemp)
