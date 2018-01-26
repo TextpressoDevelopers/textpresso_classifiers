@@ -44,7 +44,7 @@ echo -e "DATATYPE\tMODEL\tTP\tFP\tTN\tFN\tPRECISION\tRECALL\tF_MEASURE\tACCURACY
 
 for ((i=0; i<$((${#datatypes[@]})); i++))
 do
-    wget -o /dev/null --post-data="select_curator=two736&action=Curation+Statistics+Page&checkbox_${datatypes[$i]}=all&checkbox_all_flagging_methods=all" "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi" -O ${tmpfile}
+    wget -o /dev/null --post-data="select_curator=two736&action=Curation+Statistics+Page&checkbox_${datatypes[$i]}=${datatypes[$i]}&checkbox_all_flagging_methods=all" "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi" -O ${tmpfile}
     tot_p=0
     tmp=$(grep -o -P "SVM positive any</a>.*?</tr>" ${tmpfile} | awk -v col=1 'BEGIN{FS="<td colspan=\"1\">"} {print $col}' | grep -oP ">\K[0-9]*")
     if [[ ${tmp} != "" ]]
