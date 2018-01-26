@@ -85,7 +85,7 @@ do
                 done
             fi
             find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.tpcas.gz" | xargs -I {} sh -c 'convert_to_txt.py -f ${cas_type} "{}" > "${OUTPUT_DIR}/${filetype}/tmp/$(echo {} | sed 's/.tpcas.gz/.txt/g')"'
-            find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.pdf" | xargs rm
+            find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.tpcas.gz" | xargs rm
             cat "${OUTPUT_DIR}/${filetype}/tmp/${line}"* > "${OUTPUT_DIR}/${filetype}/tmp/${line}.concat.txt"
             find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.txt" | grep -v ".concat.txt" | xargs rm
             if [[ $(echo "${num_papers}%1000" | bc) == "0" ]]
