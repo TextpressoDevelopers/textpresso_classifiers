@@ -58,25 +58,25 @@ for ((i=0; i<$((${#datatypes[@]})); i++))
 do
     wget -o /dev/null --post-data="select_curator=two736&action=Curation+Statistics+Page&checkbox_${datatypes[$i]}=${datatypes[$i]}&checkbox_all_flagging_methods=all" "http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi" -O ${tmpfile}
     tot_p=0
-    tmp=$(grep -o -P "SVM positive any</a>.*?</tr>" ${tmpfile} | awk -v col=1 'BEGIN{FS="<td colspan=\"1\">"} {print $col}' | grep -oP ">\K[0-9]*")
+    tmp=$(grep -o -P "SVM positive any</a>.*?</tr>" ${tmpfile} | grep -oP ">\K[0-9]*")
     if [[ ${tmp} != "" ]]
     then
         tot_p=${tmp}
     fi
     tot_vp=0
-    tmp=$(grep -o -P "SVM positive any validated</a>.*?</tr>" ${tmpfile} | awk -v col=1 'BEGIN{FS="<td colspan=\"1\">"} {print $col}' | grep -oP ">\K[0-9]*")
+    tmp=$(grep -o -P "SVM positive any validated</a>.*?</tr>" ${tmpfile} | grep -oP ">\K[0-9]*")
     if [[ ${tmp} != "" ]]
     then
         tot_vp=${tmp}
     fi
     tot_n=0
-    tmp=$(grep -o -P "SVM negative</a>.*?</tr>" ${tmpfile} | awk -v col=1 'BEGIN{FS="<td colspan=\"1\">"} {print $col}' | grep -oP ">\K[0-9]*")
+    tmp=$(grep -o -P "SVM negative</a>.*?</tr>" ${tmpfile} | grep -oP ">\K[0-9]*")
     if [[ ${tmp} != "" ]]
     then
         tot_n=${tmp}
     fi
     tot_vn=0
-    tmp=$(grep -o -P "SVM negative validated</a>.*?</tr>" ${tmpfile} | awk -v col=1 'BEGIN{FS="<td colspan=\"1\">"} {print $col}' | grep -oP ">\K[0-9]*")
+    tmp=$(grep -o -P "SVM negative validated</a>.*?</tr>" ${tmpfile} | grep -oP ">\K[0-9]*")
     if [[ ${tmp} != "" ]]
     then
         tot_vn=${tmp}
