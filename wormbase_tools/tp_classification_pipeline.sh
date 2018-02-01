@@ -16,7 +16,7 @@ OUTPUT_DIR=""
 
 datatypes=("antibody" "catalyticact" "expression_cluster" "geneint" "geneprod" "genereg" "newmutant" "otherexpr" \
 "overexpr" "rnai" "seqchange" "structcorr")
-filetypes=("C. elegans" "PMCOA")
+filetypes=("C. elegans")
 
 while [[ $# -gt 0 ]]
 do
@@ -57,45 +57,52 @@ then
     usage
 fi
 
-mkdir -p "${OUTPUT_DIR}/C. elegans/tmp"
-touch "${OUTPUT_DIR}/C. elegans/already_classified.csv"
-mkdir -p "${OUTPUT_DIR}/PMCOA/tmp"
-touch "${OUTPUT_DIR}/PMCOA/already_classified.csv"
-
-for filetype in $filetypes[@]
+for filetype in "${filetypes[@]}"
 do
+    mkdir -p "${OUTPUT_DIR}/${filetype}/tmp"
+    touch "${OUTPUT_DIR}/${filetype}/already_classified.csv"
     if [[ ${filetype} == "C. elegans" ]]
     then
         cas_type="cas_pdf"
     else
         cas_type="cas_xml"
     fi
-    for datatype in $datatypes[@]
+    diff <(ls "${DATA_DIR}/${filetype}") <(cat "${OUTPUT_DIR}/${filetype}/already_classified.csv") | grep "^< " | sed 's/< //g' > "${OUTPUT_DIR}/${filetype}/tobeclassified.csv"
+    num_papers=1
+    cat "${OUTPUT_DIR}/${filetype}/tobeclassified.csv" | while read line
     do
-        diff <(ls "${DATA_DIR}/${filetype}") <(cat "${OUTPUT_DIR}/${filetype}/already_classified.csv") | grep "^< " | sed 's/< //g' > "${OUTPUT_DIR}/${filetype}/tobeclassified.csv"
-        num_papers=0
-        cat "${OUTPUT_DIR}/${filetype}/tobeclassified.csv" | while read line
-        do
-            find "${DATA_DIR}/${filetype}/${line}/" -name "*.tpcas.gz" | xargs -I {} cp {} "${OUTPUT_DIR}/${filetype}/tmp/${line}.tpcas.gz"
-            if [[ ${filetype} == "C. elegans" ]]
-            then
-                ls "${DATA_DIR}/C. elegans Supplementals/${line}"* | while read sup
-                do
-                    find "$sup" -name "*.tpcas.gz" | xargs -I {} cp {} "${OUTPUT_DIR}/${filetype}/tmp/${sup}.tpcas.gz"
-                done
-            fi
-            find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.tpcas.gz" | xargs -I {} sh -c 'convert_to_txt.py -f ${cas_type} "{}" > "${OUTPUT_DIR}/${filetype}/tmp/$(echo {} | sed 's/.tpcas.gz/.txt/g')"'
-            find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.tpcas.gz" | xargs rm
-            cat "${OUTPUT_DIR}/${filetype}/tmp/${line}"* > "${OUTPUT_DIR}/${filetype}/tmp/${line}.concat.txt"
-            find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.txt" | grep -v ".concat.txt" | xargs rm
-            if [[ $(echo "${num_papers}%1000" | bc) == "0" ]]
-            echo ${line} >> "${OUTPUT_DIR}/${filetype}/already_classified.csv"
-            then
-                tp_doc_classifier.py -c ${MODELS_DIR}/${datatype}.pkl -p "${OUTPUT_DIR}/${filetype}/tmp" -f ${cas_type} >> "${OUTPUT_DIR}/${filetype}/$(date "+%m-%d-%Y").csv"
-                rm -rf "${OUTPUT_DIR}/${filetype}/tmp"
-            fi
-        done
-        tp_doc_classifier.py -c ${MODELS_DIR}/${datatype}.pkl -p "${DATA_DIR}/${filetype}/tmp" -f ${cas_type} >> "${OUTPUT_DIR}/${filetype}/$(date "+%m-%d-%Y").csv"
-        rm -rf "${OUTPUT_DIR}/${filetype}/tmp"
+        mkdir -p "${OUTPUT_DIR}/${filetype}/tmp"
+        find "${DATA_DIR}/${filetype}/${line}/" -name "*.tpcas.gz" | xargs -I {} cp {} "${OUTPUT_DIR}/${filetype}/tmp/${line}.tpcas.gz"
+        if [[ ${filetype} == "C. elegans" ]]
+        then
+            find "${DATA_DIR}/C. elegans Supplementals/" -mindepth 1 -maxdepth 1 -name "${line}*" | while read sup
+            do
+                find "$sup" -name "*.tpcas.gz" | xargs -I {} cp "{}" "${OUTPUT_DIR}/${filetype}/tmp/"
+            done
+        fi
+        find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.tpcas.gz" | xargs -I {} sh -c 'filename=$(echo {} | rev | cut -d "/" -f 1 | rev); convert_doc_to_txt.py -f $1 "{}" > "$0/$2/tmp/$(echo $filename | sed 's/.tpcas.gz/.txt/g')"' "${OUTPUT_DIR}" "${cas_type}" "${filetype}"
+        find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.tpcas.gz" | xargs -I {} rm "{}"
+        cat "${OUTPUT_DIR}/${filetype}/tmp/${line}"* > "${OUTPUT_DIR}/${filetype}/tmp/${line}.concat.txt"
+        find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.txt" | grep -v ".concat.txt" | xargs -I {} rm "{}"
+        echo ${line} >> "${OUTPUT_DIR}/${filetype}/already_classified.csv"
+        if [[ $(echo "${num_papers}%1000" | bc) == "0" ]]
+        then
+            today_dir=$(echo "${OUTPUT_DIR}/${filetype}/"$(date "+%m-%d-%Y"))
+            mkdir -p "${today_dir}"
+            for datatype in "${datatypes[@]}"
+            do
+                model_type=$(ls "${MODELS_DIR}/${datatype}"*.pkl | head -n1 | awk -F "/" '{print $NF}' | sed "s/${datatype}_//g;s/.pkl//g")
+                tp_doc_classifier.py -c "${MODELS_DIR}/${datatype}_${model_type}.pkl" -p "${OUTPUT_DIR}/${filetype}/tmp" -f txt -m "${model_type}" >> "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W")"/${datatype}.csv"
+            done
+            rm -rf "${OUTPUT_DIR}/${filetype}/tmp"
+        fi
+        num_papers=$((num_papers + 1))
     done
+    for datatype in "${datatypes[@]}"
+    do
+        model_type=$(ls "${MODELS_DIR}/${datatype}"*.pkl | head -n1 | awk -F "/" '{print $NF}' | sed "s/${datatype}_//g;s/.pkl//g")
+        tp_doc_classifier.py -c "${MODELS_DIR}/${datatype}_${model_type}.pkl" -p "${OUTPUT_DIR}/${filetype}/tmp" -f txt -m "${model_type}" >> "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W")"/${datatype}.csv"
+    done
+    rm -rf "${OUTPUT_DIR}/${filetype}/tmp"
+    rm "${OUTPUT_DIR}/${filetype}/tobeclassified.csv"
 done
