@@ -82,7 +82,7 @@ do
         echo ${line} >> "${OUTPUT_DIR}/${filetype}/already_classified.csv"
         if [[ $(echo "${num_papers}%1000" | bc) == "0" ]]
         then
-            today_dir=$(echo "${OUTPUT_DIR}/${filetype}/"$(date "+%m-%d-%Y"))
+            today_dir=$(echo "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W"))
             mkdir -p "${today_dir}"
             for datatype in "${datatypes[@]}"
             do
