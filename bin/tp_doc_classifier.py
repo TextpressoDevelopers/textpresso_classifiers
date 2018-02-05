@@ -112,11 +112,10 @@ def main():
 
     if classifier is None and args.config_file is not None:
         classifier = TextpressoDocumentClassifier.load_from_file(args.config_file)
-    file_type = classifier.file_type
 
     if classifier is not None:
         if args.prediction_dir is not None:
-            results = classifier.predict_files(dir_path=args.prediction_dir, file_type=file_type,
+            results = classifier.predict_files(dir_path=args.prediction_dir, file_type=args.file_type,
                                                dense=models[args.model][0])
             for i in range(len(results[0])):
                 if results[1][i] > 0.4:
