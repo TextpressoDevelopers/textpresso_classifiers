@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/valearna/tpclassifier.svg?branch=master)](https://travis-ci.org/valearna/tpclassifier) [![Coverage Status](https://coveralls.io/repos/github/valearna/tpclassifier/badge.svg?branch=master&service=github)](https://coveralls.io/github/valearna/tpclassifier?branch=master&service=github)
+[![Build Status](https://travis-ci.org/valearna/tpclassifier.svg?branch=master)](https://travis-ci.org/valearna/tpclassifier) [![Coverage Status](https://coveralls.io/repos/github/valearna/tpclassifier/badge.svg?branch=master&service=github)](https://coveralls.io/github/valearna/tpclassifier?branch=master&service=github) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/16c6f91f44c5423184eb255d8c09841b)](https://www.codacy.com/app/valearna/tpclassifier?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=valearna/tpclassifier&amp;utm_campaign=Badge_Grade) [![Documentation Status](https://readthedocs.org/projects/tpclassifier/badge/?version=latest)](http://tpclassifier.readthedocs.io/en/latest/?badge=latest)
 
 ## Introduction
 
