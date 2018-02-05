@@ -15,7 +15,7 @@ DATA_DIR=""
 OUTPUT_DIR=""
 
 datatypes=("antibody" "catalyticact" "expression_cluster" "geneint" "geneprod" "genereg" "newmutant" "otherexpr" \
-"overexpr" "rnai" "seqchange" "structcorr")
+"overexpr" "rnai" "seqchange")
 filetypes=("C. elegans")
 
 while [[ $# -gt 0 ]]

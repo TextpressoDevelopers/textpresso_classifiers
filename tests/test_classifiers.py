@@ -7,14 +7,13 @@ from sklearn import svm
 from sklearn.naive_bayes import GaussianNB
 
 __author__ = "Valerio Arnaboldi"
-__license__ = "MIT"
 __version__ = "1.0.1"
 
 
 class TestTextpressoDocumentClassifier(unittest.TestCase):
 
     def setUp(self):
-        this_dir, this_filename = os.path.split(__file__)
+        this_dir = os.path.split(__file__)[0]
         self.training_dir_path = os.path.join(this_dir, "datasets")
         self.tpDocClassifier = TextpressoDocumentClassifier()
 
