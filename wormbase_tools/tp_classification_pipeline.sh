@@ -41,12 +41,7 @@ case $key in
         usage
     fi
     shift
-    if [[ -d $key ]]
-    then
-        OUTPUT_DIR="$key"
-    else
-        usage
-    fi
+    OUTPUT_DIR="$key"
     shift
     ;;
 esac
