@@ -27,21 +27,21 @@ case $key in
     usage
     ;;
     *)
-    if [[ -d $key ]]
+    if [[ -d $1 ]]
     then
-        MODELS_DIR="$key"
+        MODELS_DIR="$1"
     else
         usage
     fi
     shift
-    if [[ -d $key ]]
+    if [[ -d $1 ]]
     then
-        DATA_DIR="$key"
+        DATA_DIR="$1"
     else
         usage
     fi
     shift
-    OUTPUT_DIR="$key"
+    OUTPUT_DIR="$1"
     shift
     ;;
 esac
