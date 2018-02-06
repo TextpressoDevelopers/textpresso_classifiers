@@ -17,3 +17,10 @@ classifiers_comparison.py
 
 This program can be used to train different classifiers and test their performances.
 
+convert_doc_to_txt.py
+#####################
+
+This is a file converter program that extracts text from pdf or cas files and prints it as output. It shares the same
+conversion utilities that are used by the other programs. If the same documents have to be imported multiple times,
+converting them to txt with this program can save time by avoiding further conversions.
+

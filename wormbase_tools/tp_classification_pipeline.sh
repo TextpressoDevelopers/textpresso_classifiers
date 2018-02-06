@@ -55,16 +55,16 @@ fi
 for filetype in "${filetypes[@]}"
 do
     mkdir -p "${OUTPUT_DIR}/${filetype}/tmp"
-    touch "${OUTPUT_DIR}/${filetype}/already_classified.csv"
+    touch "${OUTPUT_DIR}/${filetype}/already_classified.txt"
     if [[ ${filetype} == "C. elegans" ]]
     then
         cas_type="cas_pdf"
     else
         cas_type="cas_xml"
     fi
-    diff <(ls "${DATA_DIR}/${filetype}") <(cat "${OUTPUT_DIR}/${filetype}/already_classified.csv") | grep "^< " | sed 's/< //g' > "${OUTPUT_DIR}/${filetype}/tobeclassified.csv"
+    diff <(ls "${DATA_DIR}/${filetype}") <(cat "${OUTPUT_DIR}/${filetype}/already_classified.txt") | grep "^< " | sed 's/< //g' > "${OUTPUT_DIR}/${filetype}/tobeclassified.txt"
     num_papers=1
-    cat "${OUTPUT_DIR}/${filetype}/tobeclassified.csv" | while read line
+    cat "${OUTPUT_DIR}/${filetype}/tobeclassified.txt" | while read line
     do
         mkdir -p "${OUTPUT_DIR}/${filetype}/tmp"
         find "${DATA_DIR}/${filetype}/${line}/" -name "*.tpcas.gz" | xargs -I {} cp {} "${OUTPUT_DIR}/${filetype}/tmp/${line}.tpcas.gz"
@@ -79,7 +79,7 @@ do
         find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.tpcas.gz" | xargs -I {} rm "{}"
         cat "${OUTPUT_DIR}/${filetype}/tmp/${line}"* > "${OUTPUT_DIR}/${filetype}/tmp/${line}.concat.txt"
         find "${OUTPUT_DIR}/${filetype}/tmp/" -name "${line}*.txt" | grep -v ".concat.txt" | xargs -I {} rm "{}"
-        echo ${line} >> "${OUTPUT_DIR}/${filetype}/already_classified.csv"
+        echo ${line} >> "${OUTPUT_DIR}/${filetype}/already_classified.txt"
         if [[ $(echo "${num_papers}%1000" | bc) == "0" ]]
         then
             today_dir=$(echo "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W"))
@@ -87,7 +87,7 @@ do
             for datatype in "${datatypes[@]}"
             do
                 model_type=$(ls "${MODELS_DIR}/${datatype}"*.pkl | head -n1 | awk -F "/" '{print $NF}' | sed "s/${datatype}_//g;s/.pkl//g")
-                tp_doc_classifier.py -c "${MODELS_DIR}/${datatype}_${model_type}.pkl" -p "${OUTPUT_DIR}/${filetype}/tmp" -f txt -m "${model_type}" >> "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W")"/${datatype}.csv"
+                tp_doc_classifier.py -c "${MODELS_DIR}/${datatype}_${model_type}.pkl" -p "${OUTPUT_DIR}/${filetype}/tmp" -f txt -m "${model_type}" >> "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W")"/${datatype}.txt"
             done
             rm -rf "${OUTPUT_DIR}/${filetype}/tmp"
         fi
@@ -96,8 +96,8 @@ do
     for datatype in "${datatypes[@]}"
     do
         model_type=$(ls "${MODELS_DIR}/${datatype}"*.pkl | head -n1 | awk -F "/" '{print $NF}' | sed "s/${datatype}_//g;s/.pkl//g")
-        tp_doc_classifier.py -c "${MODELS_DIR}/${datatype}_${model_type}.pkl" -p "${OUTPUT_DIR}/${filetype}/tmp" -f txt -m "${model_type}" >> "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W")"/${datatype}.csv"
+        tp_doc_classifier.py -c "${MODELS_DIR}/${datatype}_${model_type}.pkl" -p "${OUTPUT_DIR}/${filetype}/tmp" -f txt -m "${model_type}" >> "${OUTPUT_DIR}/${filetype}/"$(date "+%Y-%W")"/${datatype}.txt"
     done
     rm -rf "${OUTPUT_DIR}/${filetype}/tmp"
-    rm "${OUTPUT_DIR}/${filetype}/tobeclassified.csv"
+    rm "${OUTPUT_DIR}/${filetype}/tobeclassified.txt"
 done
