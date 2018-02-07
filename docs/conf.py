@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'tpclassifier'
+project = 'textpresso_classifiers'
 copyright = '2017, Valerio Arnaboldi'
 author = 'Valerio Arnaboldi'
 
@@ -140,7 +140,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'tpclassifier.tex', 'tpclassifier Documentation',
+    (master_doc, 'textpresso_classifiers.tex', 'textpresso_classifiers Documentation',
      'Valerio Arnaboldi', 'manual'),
 ]
 
@@ -150,7 +150,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'tpclassifier', 'tpclassifier Documentation',
+    (master_doc, 'textpresso_classifiers', 'textpresso_classifiers Documentation',
      [author], 1)
 ]
 
@@ -161,8 +161,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'tpclassifier', 'tpclassifier Documentation',
-     author, 'tpclassifier', 'One line description of project.',
+    (master_doc, 'textpresso_classifiers', 'textpresso_classifiers Documentation',
+     author, 'textpresso_classifiers', 'One line description of project.',
      'Miscellaneous'),
 ]
 

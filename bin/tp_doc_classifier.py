@@ -16,8 +16,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import NuSVR, SVC
-from tpclassifier import TextpressoDocumentClassifier, CasType
-from tpclassifier.classifiers import TokenizerType
+from textpresso_classifiers import TextpressoDocumentClassifier, CasType
+from textpresso_classifiers.classifiers import TokenizerType
 
 __author__ = "Valerio Arnaboldi"
 
@@ -37,7 +37,7 @@ def main():
                              "set")
     parser.add_argument("-p", "--predict", metavar="prediction_dir", dest="prediction_dir", type=str, default=None,
                         help="classify papers in the specified directory")
-    parser.add_argument("-c", "--config", metavar="config_file", dest="config_file", type=str, default="classifier.pkl",
+    parser.add_argument("-c", "--config", metavar="config_file", dest="config_file", type=str,
                         help="path to file where to save the classifier (in case the train option -t is activated) or "
                              "from which to load a previously saved one")
     parser.add_argument("-f", "--file-type", metavar="file_type", dest="file_type", type=str, default="pdf",

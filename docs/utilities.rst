@@ -1,5 +1,5 @@
 File Management Utilities
 =========================
 
-.. automodule:: tpclassifier.fileutils
+.. automodule:: textpresso_classifiers.fileutils
    :members:

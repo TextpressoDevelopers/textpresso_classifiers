@@ -3,8 +3,8 @@
 """Classify Textpresso documents into categories using a svm classifier"""
 
 import argparse
-import tpclassifier.fileutils
-from tpclassifier import CasType
+import textpresso_classifiers.fileutils
+from textpresso_classifiers import CasType
 
 __author__ = "Valerio Arnaboldi"
 
@@ -19,13 +19,13 @@ def main():
 
     args = parser.parse_args()
     if args.type_from == "pdf":
-        print(tpclassifier.fileutils.extract_text_from_pdf(args.input_file))
+        print(textpresso_classifiers.fileutils.extract_text_from_pdf(args.input_file))
     elif args.type_from == "cas_pdf" or args.type_from == "cas_xml":
         if args.type_from == "cas_pdf":
             cas_type = CasType.PDF
         else:
             cas_type = CasType.XML
-        print(tpclassifier.fileutils.extract_text_from_cas_content(tpclassifier.fileutils.read_compressed_cas_content(
+        print(textpresso_classifiers.fileutils.extract_text_from_cas_content(textpresso_classifiers.fileutils.read_compressed_cas_content(
             args.input_file), cas_type=cas_type))
 
     else:

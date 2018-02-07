@@ -2,14 +2,14 @@
 
 from setuptools import setup
 
-setup(name='tpclassifier',
+setup(name='textpresso_classifiers',
       version='0.1',
       description='Classify Textpresso documents into categories',
       url='',
       author='Valerio Arnaboldi',
       author_email='valearna@caltech.edu',
       license='MIT',
-      packages=['tpclassifier'],
+      packages=['textpresso_classifiers'],
       setup_requires=['numpy'],
       install_requires=[
           'sklearn',

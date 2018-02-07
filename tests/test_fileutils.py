@@ -2,7 +2,7 @@
 
 import unittest
 import os
-from tpclassifier.fileutils import *
+from textpresso_classifiers.fileutils import *
 
 
 __author__ = "Valerio Arnaboldi"

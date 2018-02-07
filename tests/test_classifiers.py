@@ -2,7 +2,7 @@
 
 import unittest
 import os
-from tpclassifier.classifiers import TextpressoDocumentClassifier, CasType, TokenizerType
+from textpresso_classifiers.classifiers import TextpressoDocumentClassifier, CasType, TokenizerType
 from sklearn import svm
 from sklearn.naive_bayes import GaussianNB
 

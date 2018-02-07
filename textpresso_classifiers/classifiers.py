@@ -5,7 +5,7 @@ import pickle
 import random
 from sklearn import metrics, feature_selection
 from namedlist import namedlist
-from tpclassifier.fileutils import *
+from textpresso_classifiers.fileutils import *
 from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer, TfidfTransformer, CountVectorizer
 from typing import Tuple, List
 from nltk import word_tokenize

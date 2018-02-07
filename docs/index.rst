@@ -6,7 +6,7 @@
 Welcome to Textpresso Classifiers Module documentation!
 =============================================================
 
-Textpresso Classifier Module (TCM) is a Python package to train and apply
+textpresso_classifiers is a Python package to train and apply
 document classifiers to scientific papers, both in the form of pdf files and
 Textpresso Central documents
 (`CAS <https://uima.apache.org/d/uimaj-2.4.0/tutorials_and_users_guides.html#ugr.tug.aae>`_

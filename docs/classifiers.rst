@@ -1,13 +1,13 @@
 Textpresso Documents Classifiers
 ================================
 
-.. automodule:: tpclassifier.classifiers
+.. automodule:: textpresso_classifiers.classifiers
 
-.. autoclass:: tpclassifier.classifiers.TextpressoDocumentClassifier
+.. autoclass:: textpresso_classifiers.classifiers.TextpressoDocumentClassifier
    :members:
 
-.. autoclass:: tpclassifier.classifiers.DatasetStruct
+.. autoclass:: textpresso_classifiers.classifiers.DatasetStruct
    :members:
 
-.. autoclass:: tpclassifier.classifiers.TestResults
+.. autoclass:: textpresso_classifiers.classifiers.TestResults
    :members:

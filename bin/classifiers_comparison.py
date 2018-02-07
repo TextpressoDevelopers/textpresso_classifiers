@@ -16,10 +16,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from tpclassifier import TextpressoDocumentClassifier, CasType
+from textpresso_classifiers import TextpressoDocumentClassifier, CasType
 from sklearn.svm import SVC
 
-from tpclassifier.classifiers import TokenizerType
+from textpresso_classifiers.classifiers import TokenizerType
 
 __author__ = "Valerio Arnaboldi"
 

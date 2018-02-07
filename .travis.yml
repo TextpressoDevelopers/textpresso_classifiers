@@ -13,6 +13,6 @@ install:
 # command to run tests
 script:
   - nosetests
-  - coverage run --source=tpclassifier setup.py test
+  - coverage run --source=textpresso_classifiers setup.py test
 after_success:
   - coveralls
